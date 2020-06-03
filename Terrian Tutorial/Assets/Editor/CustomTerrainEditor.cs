@@ -61,8 +61,17 @@ public class CustomTerrainEditor : Editor
             {
                 terrain.RandomTerrain();
             }
+
+            
         }
-        
+
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+        if (GUILayout.Button("Reset Heights"))
+        {
+            terrain.resetTerrain();
+        }
+
 
         //Must end with this, apply new changes
         serializedObject.ApplyModifiedProperties();

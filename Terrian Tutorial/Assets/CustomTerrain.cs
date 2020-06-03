@@ -16,10 +16,57 @@ public class CustomTerrain : MonoBehaviour {
     //Can just use the name and not the value between scripts
     public Vector2 randomHeightRange = new Vector2(0, 0.1f);
 
+    public Terrain terrain;
+    public TerrainData terrainData;
+
     //Processing for height value
     public void RandomTerrain()
     {
+        //WILL USE THIS IF WE WANTED A WHOLE NEW TERRAIN EVERYTIME WE HIT CREATE RANDOM TERRAIN
+        /*Create new height map, 2d array of floats
+        float[,] heightMap;
+        //Set size of height map based on the terrain data, set dimension
+        heightMap = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+        */
 
+        //Get height starting from 0,0 for entire width and height and put into height map
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+
+        //To loop around our height map, loop around x and y
+        for(int x = 0; x < terrainData.heightmapWidth; x++)
+        {
+            //Y in 2d plane would be z not y
+            for(int z =0; z< terrainData.heightmapHeight; z++)
+            {
+                //To add to the height map use +=, to replace do =
+                heightMap[x, z] += UnityEngine.Random.Range(randomHeightRange.x, randomHeightRange.y);
+
+            }
+        }
+        //Apply all new height in array starting from 0,0
+        //We can replace the 0,0 to start it at a different point if wanted
+        //Since we are doing the whole map we use 0,0
+        terrainData.SetHeights(0, 0, heightMap);
+
+    }
+    
+    public void resetTerrain()
+    {
+        float[,] heightMap;
+        heightMap = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+
+        terrainData.SetHeights(0, 0, heightMap);
+    }
+
+    //Everytime you go back to editor after editing script
+    private void OnEnable()
+    {
+        Debug.Log("Initialising Terrain Data");
+        //Grab terrain
+        terrain = this.GetComponent<Terrain>();
+        //Grab all terrain Data
+        //Also use Terrain.terrainData if you have more than 1 terrain on scene
+        terrainData = Terrain.activeTerrain.terrainData;
     }
     void Awake()
     {
