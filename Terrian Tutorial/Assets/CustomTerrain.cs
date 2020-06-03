@@ -12,6 +12,15 @@ using System.Linq;
 
 public class CustomTerrain : MonoBehaviour {
 
+    //Min and max height range
+    //Can just use the name and not the value between scripts
+    public Vector2 randomHeightRange = new Vector2(0, 0.1f);
+
+    //Processing for height value
+    public void RandomTerrain()
+    {
+
+    }
     void Awake()
     {
         //Will be used to create custom tags and automatically assign those tags onto objects
