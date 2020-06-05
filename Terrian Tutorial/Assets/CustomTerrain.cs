@@ -15,6 +15,9 @@ public class CustomTerrain : MonoBehaviour {
     //Min and max height range
     //Can just use the name and not the value between scripts
     public Vector2 randomHeightRange = new Vector2(0, 0.1f);
+    public Texture2D heightMapImage;
+    //Scaling of heightmap
+    public Vector3 heightMapScale = new Vector3(1, 1, 1);
 
     public Terrain terrain;
     public TerrainData terrainData;
@@ -48,6 +51,29 @@ public class CustomTerrain : MonoBehaviour {
         //Since we are doing the whole map we use 0,0
         terrainData.SetHeights(0, 0, heightMap);
 
+    }
+
+    //Use image to set heights
+    public void LoadTexture()
+    {
+        //Create empty height map
+        float[,] heightMap;
+        heightMap = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+
+        //Loop thru the terrain
+        for(int x = 0; x < terrainData.heightmapWidth; x++)
+        {
+            for(int z = 0; z < terrainData.heightmapHeight; z++)
+            {
+                //Set height map to be the same as the color in the texture
+                //Get pixel color at the same positions on the x and y plane
+                //Grayscale converts the color (black and white) it is all we need
+                //Multiply by height scale so height increases
+                heightMap[x, z] = heightMapImage.GetPixel((int)(x * heightMapScale.x), (int)(z * heightMapScale.z)).grayscale * heightMapScale.y;
+            }
+        }
+        //Apply changes
+        terrainData.SetHeights(0, 0, heightMap);
     }
     
     public void resetTerrain()

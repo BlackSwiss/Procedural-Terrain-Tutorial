@@ -296,7 +296,7 @@ Terrain:
   m_Enabled: 1
   serializedVersion: 3
   m_TerrainData: {fileID: 15600000, guid: e01ffdad697fce442bb2b7db876afb36, type: 2}
-  m_TreeDistance: 5000
+  m_TreeDistance: 2000
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
   m_TreeMaximumFullLODCount: 50
@@ -342,3 +342,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7376f2fe29d2f4a8a76525e7abb6d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  randomHeightRange: {x: 0, y: 0.1}
+  heightMapImage: {fileID: 2800000, guid: 9d7999ea223c7394ca27ebd45df18af3, type: 3}
+  heightMapScale: {x: 2, y: 0.5, z: 2}
+  terrain: {fileID: 2112693667}
+  terrainData: {fileID: 15600000, guid: e01ffdad697fce442bb2b7db876afb36, type: 2}

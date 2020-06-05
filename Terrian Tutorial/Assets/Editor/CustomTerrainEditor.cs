@@ -15,9 +15,12 @@ public class CustomTerrainEditor : Editor
     //Properties ----------------------------
     //Sync with height range in other script
     SerializedProperty randomHeightRange;
+    SerializedProperty heightMapScale;
+    SerializedProperty heightMapImage;
 
     //fold outs -----------------------
     bool showRandom = false;
+    bool showLoadHeights = false;
 
     //everytime we add something new in editor, terrain will renable and rerun initialization
     //Dont need to press play everytime to see changes
@@ -25,6 +28,8 @@ public class CustomTerrainEditor : Editor
     {
         //Links the values together, sync with the inspector
         randomHeightRange = serializedObject.FindProperty("randomHeightRange");
+        heightMapScale = serializedObject.FindProperty("heightMapScale");
+        heightMapImage = serializedObject.FindProperty("heightMapImage");
     }
 
     //Graphical user interface we will see in inspector for custom terrain editor
@@ -65,8 +70,27 @@ public class CustomTerrainEditor : Editor
             
         }
 
+        //Make a fold out called load heights
+        showLoadHeights = EditorGUILayout.Foldout(showLoadHeights, "Load Heights");
+        //If they press the fold out button
+        if (showLoadHeights)
+        {
+            //Line for organization
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Label("Load Heights From Texture", EditorStyles.boldLabel);
+            //2 Properties fields to put an image and a (x y z) coords 
+            EditorGUILayout.PropertyField(heightMapImage);
+            EditorGUILayout.PropertyField(heightMapScale);
+            //If they press the load Texture button
+            if (GUILayout.Button("Load Texture"))
+            {
+                terrain.LoadTexture();
+            }
+        }
+
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
+        //Code for reset button
         if (GUILayout.Button("Reset Heights"))
         {
             terrain.resetTerrain();
