@@ -19,8 +19,34 @@ public class CustomTerrain : MonoBehaviour {
     //Scaling of heightmap
     public Vector3 heightMapScale = new Vector3(1, 1, 1);
 
+    //PERLIN NOISE ----------------------------
+    public float perlinXScale = 0.01f;
+    public float perlinYScale = 0.01f;
+    //want offsets so they dont look so symmetrical
+    public int perlinOffsetX = 0;
+    public int perlinOffsetY = 0;
+
     public Terrain terrain;
     public TerrainData terrainData;
+
+    public void Perlin()
+    {
+        //Get current height map
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+
+        //Go through the depth and size of the map, height is actually depth in 3d
+        for(int y = 0; y < terrainData.heightmapHeight; y++)
+        {
+            for(int x =0; x < terrainData.heightmapWidth; x++)
+            {
+                //Assigning not adding, = replace, += add on to whats exists
+                //Using the perlin noise function to create the terrain
+                heightMap[x, y] = Mathf.PerlinNoise((x + perlinOffsetX) * perlinXScale, (y +perlinOffsetY) * perlinYScale);
+            }
+        }
+        //Apply changes
+        terrainData.SetHeights(0, 0, heightMap);
+    }
 
     //Processing for height value
     public void RandomTerrain()

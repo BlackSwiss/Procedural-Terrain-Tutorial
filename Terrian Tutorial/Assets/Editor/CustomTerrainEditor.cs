@@ -17,10 +17,15 @@ public class CustomTerrainEditor : Editor
     SerializedProperty randomHeightRange;
     SerializedProperty heightMapScale;
     SerializedProperty heightMapImage;
+    SerializedProperty perlinXScale;
+    SerializedProperty perlinYScale;
+    SerializedProperty perlinOffsetX;
+    SerializedProperty perlinOffsetY;
 
     //fold outs -----------------------
     bool showRandom = false;
     bool showLoadHeights = false;
+    bool showPerlinNoise = false;
 
     //everytime we add something new in editor, terrain will renable and rerun initialization
     //Dont need to press play everytime to see changes
@@ -30,6 +35,10 @@ public class CustomTerrainEditor : Editor
         randomHeightRange = serializedObject.FindProperty("randomHeightRange");
         heightMapScale = serializedObject.FindProperty("heightMapScale");
         heightMapImage = serializedObject.FindProperty("heightMapImage");
+        perlinXScale = serializedObject.FindProperty("perlinXScale");
+        perlinYScale = serializedObject.FindProperty("perlinYScale");
+        perlinOffsetX = serializedObject.FindProperty("perlinOffsetX");
+        perlinOffsetY = serializedObject.FindProperty("perlinOffsetY");
     }
 
     //Graphical user interface we will see in inspector for custom terrain editor
@@ -88,7 +97,28 @@ public class CustomTerrainEditor : Editor
             }
         }
 
-        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+        showPerlinNoise = EditorGUILayout.Foldout(showPerlinNoise, "Single Perlin Noise");
+        if (showPerlinNoise)
+        {
+            //Bar and header
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Label("Perlin Noise", EditorStyles.boldLabel);
+
+            //Slider for both y and x values
+            EditorGUILayout.Slider(perlinXScale, 0, 1, new GUIContent("X Scale"));
+            EditorGUILayout.Slider(perlinYScale, 0, 1, new GUIContent("Y Scale"));
+
+            //Slider for offset data
+            EditorGUILayout.IntSlider(perlinOffsetX, 0, 10000, new GUIContent("Offset X"));
+            EditorGUILayout.IntSlider(perlinOffsetY, 0, 10000, new GUIContent("Offset Y"));
+
+            //Button for perlin noise
+            if (GUILayout.Button("Perlin"))
+            {
+                terrain.Perlin();
+            }
+        }
 
         //Code for reset button
         if (GUILayout.Button("Reset Heights"))
@@ -96,6 +126,7 @@ public class CustomTerrainEditor : Editor
             terrain.resetTerrain();
         }
 
+        
 
         //Must end with this, apply new changes
         serializedObject.ApplyModifiedProperties();
