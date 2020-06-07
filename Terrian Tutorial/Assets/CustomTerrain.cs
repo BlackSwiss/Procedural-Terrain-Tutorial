@@ -26,6 +26,12 @@ public class CustomTerrain : MonoBehaviour {
     public int perlinOffsetX = 0;
     public int perlinOffsetY = 0;
 
+    //For our brownian motion
+    public int perlinOctaves = 3;
+    //Increasing amp each time going through octaves
+    public float perlinPersistance = 8;
+    public float perlinHeightScale = 0.09f;
+
     public Terrain terrain;
     public TerrainData terrainData;
 
@@ -41,7 +47,10 @@ public class CustomTerrain : MonoBehaviour {
             {
                 //Assigning not adding, = replace, += add on to whats exists
                 //Using the perlin noise function to create the terrain
-                heightMap[x, y] = Mathf.PerlinNoise((x + perlinOffsetX) * perlinXScale, (y +perlinOffsetY) * perlinYScale);
+                //For just perlin noise: heightMap[x, y] = Mathf.PerlinNoise((x + perlinOffsetX) * perlinXScale, (y +perlinOffsetY) * perlinYScale);
+
+                //For perlin noise and brownian motion
+                heightMap[x, y] = Utils.fBM((x+perlinOffsetX) * perlinXScale, (y+perlinOffsetY) * perlinYScale, perlinOctaves, perlinPersistance) * perlinHeightScale;
             }
         }
         //Apply changes
