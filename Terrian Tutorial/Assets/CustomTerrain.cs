@@ -19,12 +19,36 @@ public class CustomTerrain : MonoBehaviour {
     //Scaling of heightmap
     public Vector3 heightMapScale = new Vector3(1, 1, 1);
 
+    public bool reset = true;
+
     //PERLIN NOISE ----------------------------
     public float perlinXScale = 0.01f;
     public float perlinYScale = 0.01f;
     //want offsets so they dont look so symmetrical
     public int perlinOffsetX = 0;
     public int perlinOffsetY = 0;
+
+    //MULTIPLE PERLIN ----------------------------
+    //Create class that holds our values
+    [System.Serializable]
+    public class PerlinParameters
+    {
+        public float mPerlinXScale = 0.01f;
+        public float mPerlinYScale = 0.01f;
+        public int mPerlinOctaves = 3;
+        public float mPerlinPersistance = 8;
+        public float mPerlinHeightScale = 0.09f;
+        public int mPerlinOffsetX = 0;
+        public int mPerlinOffsetY = 0;
+        //Allows to remove things from list
+        public bool remove = false;
+    }
+
+    //First empty list
+    public List<PerlinParameters> perlinParameters = new List<PerlinParameters>()
+    {
+        new PerlinParameters()
+    };
 
     //For our brownian motion
     public int perlinOctaves = 3;
@@ -35,13 +59,27 @@ public class CustomTerrain : MonoBehaviour {
     public Terrain terrain;
     public TerrainData terrainData;
 
+    float[,] GetHeightMap()
+    {
+        //If not true use exisiting terrain
+        if (!reset)
+        {
+            return terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+        }
+        //If false create new height map
+        else
+        {
+            return new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+        }
+    }
+
     public void Perlin()
     {
         //Get current height map
-        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+        float[,] heightMap = GetHeightMap();
 
         //Go through the depth and size of the map, height is actually depth in 3d
-        for(int y = 0; y < terrainData.heightmapHeight; y++)
+        for (int y = 0; y < terrainData.heightmapHeight; y++)
         {
             for(int x =0; x < terrainData.heightmapWidth; x++)
             {
@@ -50,11 +88,61 @@ public class CustomTerrain : MonoBehaviour {
                 //For just perlin noise: heightMap[x, y] = Mathf.PerlinNoise((x + perlinOffsetX) * perlinXScale, (y +perlinOffsetY) * perlinYScale);
 
                 //For perlin noise and brownian motion
-                heightMap[x, y] = Utils.fBM((x+perlinOffsetX) * perlinXScale, (y+perlinOffsetY) * perlinYScale, perlinOctaves, perlinPersistance) * perlinHeightScale;
+                heightMap[x, y] += Utils.fBM((x+perlinOffsetX) * perlinXScale, (y+perlinOffsetY) * perlinYScale, perlinOctaves, perlinPersistance) * perlinHeightScale;
             }
         }
         //Apply changes
         terrainData.SetHeights(0, 0, heightMap);
+    }
+
+    public void MultiplePerlinTerrain()
+    {
+        float[,] heightMap = GetHeightMap();
+        for(int y = 0; y< terrainData.heightmapHeight; y++)
+        {
+            for(int x = 0; x < terrainData.heightmapWidth; x++)
+            {
+                //Loop around our list
+                //For each set of parameters
+                foreach(PerlinParameters p in perlinParameters)
+                {
+                    //Use the brownian motion equation
+                    //Use += to add multiple perlin noise curves
+                    heightMap[x,y] += Utils.fBM((x + p.mPerlinOffsetX) * p.mPerlinXScale, (y + p.mPerlinOffsetY) * p.mPerlinYScale, p.mPerlinOctaves, p.mPerlinPersistance) * p.mPerlinHeightScale;
+                }
+            }
+        }
+        terrainData.SetHeights(0, 0, heightMap);
+    }
+
+    //Create new item in list
+    public void AddNewPerlin()
+    {
+        //GUI table will add a row for us
+        perlinParameters.Add(new PerlinParameters());
+    }
+
+    //remove tiem from list
+    public void RemovePerlin()
+    {
+        //Create another list
+        List<PerlinParameters> keptPerlinParameters = new List<PerlinParameters>();
+
+        //Loop around current list
+        for(int i = 0; i < perlinParameters.Count; i++)
+        {
+            //Any that wont be removed will go into new list
+            if (!perlinParameters[i].remove)
+            {
+                keptPerlinParameters.Add(perlinParameters[i]);
+            }
+        }
+        //Make sure we have one thing in the list at all times
+        if (keptPerlinParameters.Count == 0) // dont want to keep any
+        {
+            keptPerlinParameters.Add(perlinParameters[0]);
+        }
+        perlinParameters = keptPerlinParameters;
     }
 
     //Processing for height value
@@ -68,10 +156,10 @@ public class CustomTerrain : MonoBehaviour {
         */
 
         //Get height starting from 0,0 for entire width and height and put into height map
-        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+        float[,] heightMap = GetHeightMap();
 
         //To loop around our height map, loop around x and y
-        for(int x = 0; x < terrainData.heightmapWidth; x++)
+        for (int x = 0; x < terrainData.heightmapWidth; x++)
         {
             //Y in 2d plane would be z not y
             for(int z =0; z< terrainData.heightmapHeight; z++)
@@ -93,10 +181,10 @@ public class CustomTerrain : MonoBehaviour {
     {
         //Create empty height map
         float[,] heightMap;
-        heightMap = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+        heightMap = GetHeightMap();
 
         //Loop thru the terrain
-        for(int x = 0; x < terrainData.heightmapWidth; x++)
+        for (int x = 0; x < terrainData.heightmapWidth; x++)
         {
             for(int z = 0; z < terrainData.heightmapHeight; z++)
             {
@@ -104,7 +192,7 @@ public class CustomTerrain : MonoBehaviour {
                 //Get pixel color at the same positions on the x and y plane
                 //Grayscale converts the color (black and white) it is all we need
                 //Multiply by height scale so height increases
-                heightMap[x, z] = heightMapImage.GetPixel((int)(x * heightMapScale.x), (int)(z * heightMapScale.z)).grayscale * heightMapScale.y;
+                heightMap[x, z] += heightMapImage.GetPixel((int)(x * heightMapScale.x), (int)(z * heightMapScale.z)).grayscale * heightMapScale.y;
             }
         }
         //Apply changes
