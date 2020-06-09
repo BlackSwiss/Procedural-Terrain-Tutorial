@@ -34,6 +34,7 @@ public class CustomTerrainEditor : Editor
     bool showLoadHeights = false;
     bool showPerlinNoise = false;
     bool showMultiplePerlin = false;
+    bool showVoronoi = false;
 
     //everytime we add something new in editor, terrain will renable and rerun initialization
     //Dont need to press play everytime to see changes
@@ -163,6 +164,14 @@ public class CustomTerrainEditor : Editor
             if(GUILayout.Button("Apply Multiple Perlin"))
             {
                 terrain.MultiplePerlinTerrain();
+            }
+        }
+        showVoronoi = EditorGUILayout.Foldout(showVoronoi, "Voronoi");
+        if (showVoronoi)
+        {
+            if (GUILayout.Button("Voronoi"))
+            {
+                terrain.Voronoi();
             }
         }
 

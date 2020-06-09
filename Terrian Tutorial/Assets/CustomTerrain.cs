@@ -139,12 +139,53 @@ public class CustomTerrain : MonoBehaviour {
         }
         //Make sure we have one thing in the list at all times
         if (keptPerlinParameters.Count == 0) // dont want to keep any
+
         {
             keptPerlinParameters.Add(perlinParameters[0]);
         }
         perlinParameters = keptPerlinParameters;
     }
 
+    public void Voronoi()
+    {
+        //Create height map
+        float[,] heightMap = GetHeightMap();
+        float fallOff = 2f;
+
+        Vector3 peak = new Vector3(256, 0.2f, 256);
+
+        //Get a random range that is within the terrain, raise it by a random amount
+        //Y value is the height of the peak, (x,y,z)
+
+        //Vector3 peak = new Vector3(UnityEngine.Random.Range(0, terrainData.heightmapWidth), UnityEngine.Random.Range(0.0f, 1.0f), UnityEngine.Random.Range(0, terrainData.heightmapHeight));
+       
+        //at the x and z value, we set the peak to whatever our y is
+        heightMap[(int)peak.x, (int)peak.z] = peak.y;
+
+        //Get a peak location on height map
+        Vector2 peakLocation = new Vector2(peak.x, peak.z);
+        //Max distance the farthest point could be on the heightmap
+        //Looking at completle opposite conrner of the peak location
+        float maxDistance = Vector2.Distance(new Vector2(0, 0), new Vector2(terrainData.heightmapWidth, terrainData.heightmapHeight));
+
+        for(int y= 0; y<terrainData.heightmapHeight; y++)
+        {
+            for(int x=0; x < terrainData.heightmapWidth; x++)
+            {
+                //Stop us from processing the peak, if its the peak then were at the peak and dont want to do anything with its height
+                if(!(x==peak.x && y== peak.z))
+                {
+                    //Get distance from the peak location to current location
+                    float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) * fallOff;
+                    //each location on the heightmap will be equal to the height of the peak - (distance to peak / max distance so its under 1)
+                    //no matter how far, you are going to get shorter peaks
+                    heightMap[x, y] = peak.y - (distanceToPeak / maxDistance);
+                }
+            }
+        }
+        terrainData.SetHeights(0, 0, heightMap);
+
+    }
     //Processing for height value
     public void RandomTerrain()
     {
