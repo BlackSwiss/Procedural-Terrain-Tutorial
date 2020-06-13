@@ -150,7 +150,8 @@ public class CustomTerrain : MonoBehaviour {
     {
         //Create height map
         float[,] heightMap = GetHeightMap();
-        float fallOff = 2f;
+        float fallOff = 0.2f;
+        float dropOff = 0.6f;
 
         Vector3 peak = new Vector3(256, 0.2f, 256);
 
@@ -176,10 +177,19 @@ public class CustomTerrain : MonoBehaviour {
                 if(!(x==peak.x && y== peak.z))
                 {
                     //Get distance from the peak location to current location
-                    float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) * fallOff;
+                    //float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) *fallOff;
                     //each location on the heightmap will be equal to the height of the peak - (distance to peak / max distance so its under 1)
                     //no matter how far, you are going to get shorter peaks
-                    heightMap[x, y] = peak.y - (distanceToPeak / maxDistance);
+                    //heightMap[x, y] = peak.y - (distanceToPeak / maxDistance);
+
+                    //Using equations and trying to get a more round mountain
+                    //More control and have value from 0 to 1
+                    float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) / maxDistance;
+                    //Height = equation were trying, can use different functions
+                    float h = peak.y - distanceToPeak * fallOff - Mathf.Pow(distanceToPeak, dropOff);
+                    //Plug equation into heightmap
+                    heightMap[x, y] = h;
+
                 }
             }
         }
