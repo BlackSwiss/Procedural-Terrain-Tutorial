@@ -44,6 +44,13 @@ public class CustomTerrain : MonoBehaviour {
         public bool remove = false;
     }
 
+    //VORONOI-------------------------
+    public float voronoiFallOff = 0.2f;
+    public float voronoiDropOff = 0.6f;
+    public float voronoiMinHeight = 0.1f;
+    public float voronoiMaxHeight = 0.5f;
+    public int voronoiPeaks = 5;
+
     //First empty list
     public List<PerlinParameters> perlinParameters = new List<PerlinParameters>()
     {
@@ -150,46 +157,50 @@ public class CustomTerrain : MonoBehaviour {
     {
         //Create height map
         float[,] heightMap = GetHeightMap();
-        float fallOff = 0.2f;
-        float dropOff = 0.6f;
 
-        Vector3 peak = new Vector3(256, 0.2f, 256);
-
-        //Get a random range that is within the terrain, raise it by a random amount
-        //Y value is the height of the peak, (x,y,z)
-
-        //Vector3 peak = new Vector3(UnityEngine.Random.Range(0, terrainData.heightmapWidth), UnityEngine.Random.Range(0.0f, 1.0f), UnityEngine.Random.Range(0, terrainData.heightmapHeight));
-       
-        //at the x and z value, we set the peak to whatever our y is
-        heightMap[(int)peak.x, (int)peak.z] = peak.y;
-
-        //Get a peak location on height map
-        Vector2 peakLocation = new Vector2(peak.x, peak.z);
-        //Max distance the farthest point could be on the heightmap
-        //Looking at completle opposite conrner of the peak location
-        float maxDistance = Vector2.Distance(new Vector2(0, 0), new Vector2(terrainData.heightmapWidth, terrainData.heightmapHeight));
-
-        for(int y= 0; y<terrainData.heightmapHeight; y++)
+        for (int p = 0; p < voronoiPeaks; p++)
         {
-            for(int x=0; x < terrainData.heightmapWidth; x++)
+            Vector3 peak = new Vector3(UnityEngine.Random.Range(0, terrainData.heightmapWidth),
+                                       UnityEngine.Random.Range(voronoiMinHeight, voronoiMaxHeight),
+                                       UnityEngine.Random.Range(0, terrainData.heightmapHeight));
+
+
+            //Get a random range that is within the terrain, raise it by a random amount
+            //Y value is the height of the peak, (x,y,z)
+
+            //Vector3 peak = new Vector3(UnityEngine.Random.Range(0, terrainData.heightmapWidth), UnityEngine.Random.Range(0.0f, 1.0f), UnityEngine.Random.Range(0, terrainData.heightmapHeight));
+
+            //at the x and z value, we set the peak to whatever our y is
+            heightMap[(int)peak.x, (int)peak.z] = peak.y;
+
+            //Get a peak location on height map
+            Vector2 peakLocation = new Vector2(peak.x, peak.z);
+            //Max distance the farthest point could be on the heightmap
+            //Looking at completle opposite conrner of the peak location
+            float maxDistance = Vector2.Distance(new Vector2(0, 0), new Vector2(terrainData.heightmapWidth, terrainData.heightmapHeight));
+
+            for (int y = 0; y < terrainData.heightmapHeight; y++)
             {
-                //Stop us from processing the peak, if its the peak then were at the peak and dont want to do anything with its height
-                if(!(x==peak.x && y== peak.z))
+                for (int x = 0; x < terrainData.heightmapWidth; x++)
                 {
-                    //Get distance from the peak location to current location
-                    //float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) *fallOff;
-                    //each location on the heightmap will be equal to the height of the peak - (distance to peak / max distance so its under 1)
-                    //no matter how far, you are going to get shorter peaks
-                    //heightMap[x, y] = peak.y - (distanceToPeak / maxDistance);
+                    //Stop us from processing the peak, if its the peak then were at the peak and dont want to do anything with its height
+                    if (!(x == peak.x && y == peak.z))
+                    {
+                        //Get distance from the peak location to current location
+                        //float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) *fallOff;
+                        //each location on the heightmap will be equal to the height of the peak - (distance to peak / max distance so its under 1)
+                        //no matter how far, you are going to get shorter peaks
+                        //heightMap[x, y] = peak.y - (distanceToPeak / maxDistance);
 
-                    //Using equations and trying to get a more round mountain
-                    //More control and have value from 0 to 1
-                    float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) / maxDistance;
-                    //Height = equation were trying, can use different functions
-                    float h = peak.y - distanceToPeak * fallOff - Mathf.Pow(distanceToPeak, dropOff);
-                    //Plug equation into heightmap
-                    heightMap[x, y] = h;
+                        //Using equations and trying to get a more round mountain
+                        //More control and have value from 0 to 1
+                        float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) / maxDistance;
+                        //Height = equation were trying, can use different functions
+                        float h = peak.y - distanceToPeak * voronoiFallOff - Mathf.Pow(distanceToPeak, voronoiDropOff);
+                        //Plug equation into heightmap
+                        heightMap[x, y] = h;
 
+                    }
                 }
             }
         }
