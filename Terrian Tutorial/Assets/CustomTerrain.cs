@@ -171,7 +171,10 @@ public class CustomTerrain : MonoBehaviour {
             //Vector3 peak = new Vector3(UnityEngine.Random.Range(0, terrainData.heightmapWidth), UnityEngine.Random.Range(0.0f, 1.0f), UnityEngine.Random.Range(0, terrainData.heightmapHeight));
 
             //at the x and z value, we set the peak to whatever our y is
-            heightMap[(int)peak.x, (int)peak.z] = peak.y;
+            if (heightMap[(int)peak.x, (int)peak.z] < peak.y)
+                heightMap[(int)peak.x, (int)peak.z] = peak.y;
+            else
+                continue;
 
             //Get a peak location on height map
             Vector2 peakLocation = new Vector2(peak.x, peak.z);
@@ -198,7 +201,8 @@ public class CustomTerrain : MonoBehaviour {
                         //Height = equation were trying, can use different functions
                         float h = peak.y - distanceToPeak * voronoiFallOff - Mathf.Pow(distanceToPeak, voronoiDropOff);
                         //Plug equation into heightmap
-                        heightMap[x, y] = h;
+                        if(heightMap[x,y] < h)
+                            heightMap[x, y] = h;
 
                     }
                 }

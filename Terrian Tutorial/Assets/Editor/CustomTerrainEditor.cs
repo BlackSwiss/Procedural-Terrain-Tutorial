@@ -62,6 +62,8 @@ public class CustomTerrainEditor : Editor
         voronoiDropOff = serializedObject.FindProperty("voronoiDropOff");
         voronoiFallOff = serializedObject.FindProperty("voronoiFallOff");
         voronoiPeaks = serializedObject.FindProperty("voronoiPeaks");
+        voronoiMinHeight = serializedObject.FindProperty("voronoiMinHeight");
+        voronoiMaxHeight = serializedObject.FindProperty("voronoiMaxHeight");
     }
 
     //Graphical user interface we will see in inspector for custom terrain editor
