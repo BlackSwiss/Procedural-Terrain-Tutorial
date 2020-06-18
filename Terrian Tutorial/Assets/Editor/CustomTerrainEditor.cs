@@ -30,6 +30,7 @@ public class CustomTerrainEditor : Editor
     SerializedProperty voronoiMinHeight;
     SerializedProperty voronoiMaxHeight;
     SerializedProperty voronoiPeaks;
+    SerializedProperty voronoiType;
 
     GUITableState perlinParameterTable;
     SerializedProperty perlinParameters;
@@ -64,6 +65,7 @@ public class CustomTerrainEditor : Editor
         voronoiPeaks = serializedObject.FindProperty("voronoiPeaks");
         voronoiMinHeight = serializedObject.FindProperty("voronoiMinHeight");
         voronoiMaxHeight = serializedObject.FindProperty("voronoiMaxHeight");
+        voronoiType = serializedObject.FindProperty("voronoiType");
     }
 
     //Graphical user interface we will see in inspector for custom terrain editor
@@ -184,6 +186,7 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.Slider(voronoiDropOff, 0, 10, new GUIContent("Dropoff"));
             EditorGUILayout.Slider(voronoiMinHeight, 0, 1, new GUIContent("Min Height"));
             EditorGUILayout.Slider(voronoiMaxHeight, 0, 1, new GUIContent("Max Height"));
+            EditorGUILayout.PropertyField(voronoiType);
             if (GUILayout.Button("Voronoi"))
             {
                 terrain.Voronoi();

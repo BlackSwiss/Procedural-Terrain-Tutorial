@@ -50,6 +50,9 @@ public class CustomTerrain : MonoBehaviour {
     public float voronoiMinHeight = 0.1f;
     public float voronoiMaxHeight = 0.5f;
     public int voronoiPeaks = 5;
+    //Allow us to switch between these options
+    public enum VoronoiType { Linear = 0, Power = 1, Combined  = 2, Challenge = 3}
+    public VoronoiType voronoiType = VoronoiType.Linear;
 
     //First empty list
     public List<PerlinParameters> perlinParameters = new List<PerlinParameters>()
@@ -198,8 +201,33 @@ public class CustomTerrain : MonoBehaviour {
                         //Using equations and trying to get a more round mountain
                         //More control and have value from 0 to 1
                         float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) / maxDistance;
-                        //Height = equation were trying, can use different functions
-                        float h = peak.y - distanceToPeak * voronoiFallOff - Mathf.Pow(distanceToPeak, voronoiDropOff);
+                        float h;
+
+                        if (voronoiType == VoronoiType.Combined)
+                        {
+                            h = peak.y - distanceToPeak * voronoiFallOff - Mathf.Pow(distanceToPeak, voronoiDropOff);
+                        }
+                        else if (voronoiType == VoronoiType.Power)
+                        {
+                            h = peak.y - Mathf.Pow(distanceToPeak, voronoiDropOff) * voronoiFallOff;
+                        }
+                        else if (voronoiType == VoronoiType.Challenge)
+                        {
+                            h = peak.y - Mathf.Pow(distanceToPeak * 3, voronoiFallOff) -  Mathf.Sin((float)(distanceToPeak * 2 * Math.PI)) / voronoiDropOff;
+                        }
+                        else
+                        {
+                            h = peak.y - distanceToPeak * voronoiFallOff;
+                        }
+
+                        /*//Height = equation were trying, can use different functions
+                        //float h = peak.y - distanceToPeak * voronoiFallOff - Mathf.Pow(distanceToPeak, voronoiDropOff); //combined
+
+                        //float h = peak.y - Math.Pow(distanceToPeak, voronoiDropOff)*voronoiFallOff; //power
+
+                        float h = peak.y - distanceToPeak * voronoiFallOff - Mathf.Pow(distanceToPeak, voronoiDropOff); //linear
+                        */
+
                         //Plug equation into heightmap
                         if(heightMap[x,y] < h)
                             heightMap[x, y] = h;
