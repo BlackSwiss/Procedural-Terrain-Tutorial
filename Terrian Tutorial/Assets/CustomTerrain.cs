@@ -83,6 +83,7 @@ public class CustomTerrain : MonoBehaviour {
         }
     }
 
+    //A mathimatical function that will loop through all points in terrain
     public void Perlin()
     {
         //Get current height map
@@ -105,6 +106,7 @@ public class CustomTerrain : MonoBehaviour {
         terrainData.SetHeights(0, 0, heightMap);
     }
 
+    //Allows for multiple perlin functions in one terrain
     public void MultiplePerlinTerrain()
     {
         float[,] heightMap = GetHeightMap();
@@ -203,6 +205,7 @@ public class CustomTerrain : MonoBehaviour {
                         float distanceToPeak = Vector2.Distance(peakLocation, new Vector2(x, y)) / maxDistance;
                         float h;
 
+                        //Different functiosn to be used with voronoi variables
                         if (voronoiType == VoronoiType.Combined)
                         {
                             h = peak.y - distanceToPeak * voronoiFallOff - Mathf.Pow(distanceToPeak, voronoiDropOff);
