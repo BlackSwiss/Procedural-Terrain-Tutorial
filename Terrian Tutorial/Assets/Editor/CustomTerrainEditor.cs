@@ -129,6 +129,7 @@ public class CustomTerrainEditor : Editor
 
 
         showPerlinNoise = EditorGUILayout.Foldout(showPerlinNoise, "Single Perlin Noise");
+        //Perlin noise menu
         if (showPerlinNoise)
         {
             //Bar and header
@@ -154,6 +155,7 @@ public class CustomTerrainEditor : Editor
         }
 
         showMultiplePerlin = EditorGUILayout.Foldout(showMultiplePerlin, "Multiple Perlin Noise");
+        //Multiple perlin noise menu
         if (showMultiplePerlin)
         {
             //Labels
@@ -179,8 +181,10 @@ public class CustomTerrainEditor : Editor
             }
         }
         showVoronoi = EditorGUILayout.Foldout(showVoronoi, "Voronoi");
+        //Vornoi dropout menu
         if (showVoronoi)
         {
+            //Vornoi variables and min and max values
             EditorGUILayout.IntSlider(voronoiPeaks, 1, 10, new GUIContent("Peak Count"));
             EditorGUILayout.Slider(voronoiFallOff, 0, 10, new GUIContent("Falloff"));
             EditorGUILayout.Slider(voronoiDropOff, 0, 10, new GUIContent("Dropoff"));
