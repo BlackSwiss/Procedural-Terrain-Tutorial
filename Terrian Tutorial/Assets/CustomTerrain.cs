@@ -242,6 +242,57 @@ public class CustomTerrain : MonoBehaviour {
         terrainData.SetHeights(0, 0, heightMap);
 
     }
+    //Code for midpoint displacement
+    public void MidpointDisplacement()
+    {
+        //Get height map
+        float[,] heightMap = GetHeightMap();
+        //Get width
+        int width = terrainData.heightmapWidth - 1;
+        //Set up square size to be the width
+        int squareSize = width;
+        float height = (float)squareSize / 2.0f * 0.01f;
+        float roughness = 2.0f;
+        float heightDampener = (float)Mathf.Pow(2, -1 * roughness);
+
+        //Specify where each vertex is during the function
+        int cornerX, cornerY;
+        int midX, midY;
+        int pmidXL, pmidXR, pmidYU, pmidYD;
+
+        //Set terrain to random height
+        //Need a starting value to add to our average
+        heightMap[0, 0] = UnityEngine.Random.Range(0f, 0.2f);
+        heightMap[0,terrainData.heightmapHeight - 2] = UnityEngine.Random.Range(0f, 0.2f);
+        heightMap[terrainData.heightmapWidth - 2, 0] = UnityEngine.Random.Range(0f, 0.2f);
+        heightMap[terrainData.heightmapWidth - 2, terrainData.heightmapHeight - 2] = UnityEngine.Random.Range(0f, 0.2f);
+
+        while (squareSize > 0)
+        {
+            for (int x = 0; x < width; x += squareSize)
+            {
+                for (int y = 0; y < width; y += squareSize)
+                {
+                    cornerX = (x + squareSize);
+                    cornerY = (y + squareSize);
+
+                    midX = (int)(x + squareSize / 2.0f);
+                    midY = (int)(y + squareSize / 2.0f);
+
+                    //Midpoint will be all 4 corners added together /4
+                    heightMap[midX, midY] = (float)((heightMap[x, y] + heightMap[cornerX, y] + heightMap[x, cornerY] + heightMap[cornerX, cornerY]) / 4.0f + UnityEngine.Random.Range(-height, height));
+                }
+            }
+            //First time we loop we wil have whole terrain, then half, etc.
+            squareSize = (int)(squareSize / 2.0f);
+            height *= heightDampener;
+        }
+        terrainData.SetHeights(0, 0, heightMap);
+    }
+
+
+
+
     //Processing for height value
     public void RandomTerrain()
     {
