@@ -283,8 +283,26 @@ public class CustomTerrain : MonoBehaviour {
                     heightMap[midX, midY] = (float)((heightMap[x, y] + heightMap[cornerX, y] + heightMap[x, cornerY] + heightMap[cornerX, cornerY]) / 4.0f + UnityEngine.Random.Range(-height, height));
                 }
             }
-            //First time we loop we wil have whole terrain, then half, etc.
-            squareSize = (int)(squareSize / 2.0f);
+            for (int x = 0; x < width; x += squareSize)
+            {
+                for (int y = 0; y < width; y += squareSize)
+                {
+                    cornerX = (x + squareSize);
+                    cornerY = (y + squareSize);
+
+                    midX = (int)(x + squareSize / 2.0f);
+                    midY = (int)(y + squareSize / 2.0f);
+
+                    pmidXR = (int)(midX + squareSize);
+                    pmidYU = (int)(midY + squareSize);
+                    pmidXL = (int)(midX - squareSize);
+                    pmidYD = (int)(midY - squareSize);
+
+                    heightMap[midX, y] = (float)((heightMap[midX,midY] + heightMap[x, y] + heightMap[midX,pmidYD]+heightMap[cornerX,y] / 4.0f + UnityEngine.Random.Range(-height, height)));
+                }
+            }
+                    //First time we loop we wil have whole terrain, then half, etc.
+                    squareSize = (int)(squareSize / 2.0f);
             height *= heightDampener;
         }
         terrainData.SetHeights(0, 0, heightMap);
