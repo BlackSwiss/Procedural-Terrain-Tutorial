@@ -211,7 +211,7 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.PropertyField(MPDheightMin);
             EditorGUILayout.PropertyField(MPDheightMax);
             EditorGUILayout.PropertyField(MPDheightDampenerPower);
-            EditorGUILayout.PropertyField(MPDroughtness);
+            EditorGUILayout.PropertyField(MPDroughness);
             if (GUILayout.Button("Midpoint"))
             {
                 terrain.MidpointDisplacement();
