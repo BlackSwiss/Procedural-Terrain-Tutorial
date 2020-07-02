@@ -352,12 +352,15 @@ public class CustomTerrain : MonoBehaviour {
             for(int x =0; x < terrainData.heightmapWidth; x++)
             {
                 float avgHeight = heightMap[x, y];
+                //Loop around and grab all neighbours
                 List<Vector2> neighbours = GenerateNeighbours(new Vector2(x, y), terrainData.heightmapWidth, terrainData.heightmapHeight);
+                //Loop around each neighbour, add height
                 foreach (Vector2 n in neighbours)
                 {
                     avgHeight += heightMap[(int)n.x, (int)n.y];
                 }
 
+                //Put into heightmap where it is /count+1
                 heightMap[x, y] = avgHeight / ((float)neighbours.Count + 1);
             }
         }

@@ -46,6 +46,7 @@ public class CustomTerrainEditor : Editor
     bool showMultiplePerlin = false;
     bool showVoronoi = false;
     bool showMidpoint = false;
+    bool showSmooth = false;
 
     //everytime we add something new in editor, terrain will renable and rerun initialization
     //Dont need to press play everytime to see changes
@@ -74,6 +75,7 @@ public class CustomTerrainEditor : Editor
         MPDheightMin = serializedObject.FindProperty("MPDheightMin");
         MPDheightMax = serializedObject.FindProperty("MPDheightMax");
         MPDheightDampenerPower = serializedObject.FindProperty("MPDheightDampenerPower");
+        MPDroughness = serializedObject.FindProperty("MPDroughness");
     }
 
     //Graphical user interface we will see in inspector for custom terrain editor
@@ -212,9 +214,17 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.PropertyField(MPDheightMax);
             EditorGUILayout.PropertyField(MPDheightDampenerPower);
             EditorGUILayout.PropertyField(MPDroughness);
-            if (GUILayout.Button("Midpoint"))
+            if (GUILayout.Button("MPD"))
             {
                 terrain.MidpointDisplacement();
+            }
+        }
+        showSmooth = EditorGUILayout.Foldout(showSmooth, "Smooth");
+        if (showSmooth)
+        {
+            if (GUILayout.Button("Smooth"))
+            {
+                terrain.Smooth();
             }
         }
 

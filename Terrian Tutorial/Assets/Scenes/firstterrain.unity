@@ -345,7 +345,7 @@ MonoBehaviour:
   randomHeightRange: {x: 0, y: 0.1}
   heightMapImage: {fileID: 2800000, guid: 9d7999ea223c7394ca27ebd45df18af3, type: 3}
   heightMapScale: {x: 2, y: 0.5, z: 2}
-  reset: 1
+  reset: 0
   perlinXScale: 0.002
   perlinYScale: 0.002
   perlinOffsetX: 7657
@@ -356,6 +356,10 @@ MonoBehaviour:
   voronoiMaxHeight: 0.23
   voronoiPeaks: 10
   voronoiType: 3
+  MPDheightMin: -10
+  MPDheightMax: 10
+  MPDheightDampenerPower: 2
+  MPDroughness: 2
   perlinParameters:
   - mPerlinXScale: 0.01
     mPerlinYScale: 0.01
