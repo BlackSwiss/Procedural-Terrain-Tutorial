@@ -60,10 +60,33 @@ public class CustomTerrain : MonoBehaviour {
     public float MPDheightDampenerPower = 2.0f;
     public float MPDroughness = 2.0f;
 
+    //Smooth
+    public int smoothAmount = 1;
+
     //First empty list
     public List<PerlinParameters> perlinParameters = new List<PerlinParameters>()
     {
         new PerlinParameters()
+    };
+
+    //SPLATMAPS --------------------------------------
+    [System.Serializable]
+    public class SplatHeights
+    {
+        //Record texture and height we want that texture in
+        public Texture2D texture = null;
+        public float minHeight = 0.1f;
+        public float maxHeight = 0.2f;
+        //How far across tile you want to start before painting
+        public Vector2 tileOffset = new Vector2(0, 0);
+        //How big it will tile across surface
+        public Vector2 tileSize = new Vector2(50, 50);
+        public bool remove = false;
+    }
+
+    public List<SplatHeights> splatHeights = new List<SplatHeights>()
+    {
+        new SplatHeights()
     };
 
     //For our brownian motion
@@ -88,6 +111,59 @@ public class CustomTerrain : MonoBehaviour {
             return new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
         }
     }
+
+
+    //Used for plus button on table
+    //Add new height to list of splat heights
+    public void AddnewSplatHeight()
+    {
+        //Add to list
+        splatHeights.Add(new SplatHeights());
+    }
+
+    //Remove for minus sign
+    public void RemoveSplatHeight()
+    {
+        List<SplatHeights> keptSplatHeights = new List<SplatHeights>();
+        for(int i = 0; i < splatHeights.Count; i++)
+        {
+            if (!splatHeights[i].remove)
+            {
+                keptSplatHeights.Add(splatHeights[i]);
+            }
+        }
+        //Must always have 1 in the list
+        if(keptSplatHeights.Count == 0) //Dont want to keep any
+        {
+            keptSplatHeights.Add(splatHeights[0]); //add at least 1
+        }
+        splatHeights = keptSplatHeights;
+    }
+
+    public void SplatMaps()
+    {
+        //New array
+        SplatPrototype[] newSplatPrototypes;
+        //Give count, for each texture in list we want that many spaces in prototype
+        newSplatPrototypes = new SplatPrototype[splatHeights.Count];
+        int spindex = 0;
+        //Loops through all textures and adds them to prototypes with properties
+        foreach(SplatHeights sh in splatHeights)
+        {
+            newSplatPrototypes[spindex] = new SplatPrototype();
+            //Set texture to texture in heightmaps
+            newSplatPrototypes[spindex].texture = sh.texture;
+            newSplatPrototypes[spindex].tileOffset = sh.tileOffset;
+            newSplatPrototypes[spindex].tileSize = sh.tileSize;
+            //Apply texture to add pixel values
+            newSplatPrototypes[spindex].texture.Apply(true);
+            //Increment index
+            spindex++;
+        }
+        //Like terrain.setHeights, applies textures into list
+        terrainData.splatPrototypes = newSplatPrototypes;
+    }
+
 
     //A mathimatical function that will loop through all points in terrain
     public void Perlin()
@@ -346,28 +422,39 @@ public class CustomTerrain : MonoBehaviour {
 
     public void Smooth()
     {
-        float[,] heightMap = GetHeightMap();
-        for(int y =0; y < terrainData.heightmapHeight; y++)
-        {
-            for(int x =0; x < terrainData.heightmapWidth; x++)
-            {
-                float avgHeight = heightMap[x, y];
-                //Loop around and grab all neighbours
-                List<Vector2> neighbours = GenerateNeighbours(new Vector2(x, y), terrainData.heightmapWidth, terrainData.heightmapHeight);
-                //Loop around each neighbour, add height
-                foreach (Vector2 n in neighbours)
-                {
-                    avgHeight += heightMap[(int)n.x, (int)n.y];
-                }
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+        //Display bar/ progress bar
+        float smoothProgress = 0;
+        //Title, text under bar, value of progress bar 0-1
+        EditorUtility.DisplayProgressBar("Smoothing Terrain", "Progress", smoothProgress);
 
-                //Put into heightmap where it is /count+1
-                heightMap[x, y] = avgHeight / ((float)neighbours.Count + 1);
+        for (int i = 0; i < smoothAmount; i++)
+        {
+            for (int y = 0; y < terrainData.heightmapHeight; y++)
+            {
+                for (int x = 0; x < terrainData.heightmapWidth; x++)
+                {
+                    float avgHeight = heightMap[x, y];
+                    //Loop around and grab all neighbours
+                    List<Vector2> neighbours = GenerateNeighbours(new Vector2(x, y), terrainData.heightmapWidth, terrainData.heightmapHeight);
+                    //Loop around each neighbour, add height
+                    foreach (Vector2 n in neighbours)
+                    {
+                        avgHeight += heightMap[(int)n.x, (int)n.y];
+                    }
+
+                    //Put into heightmap where it is /count+1
+                    heightMap[x, y] = avgHeight / ((float)neighbours.Count + 1);
+                }
             }
+            smoothProgress++;
+            //Will give a value between 0-1
+            EditorUtility.DisplayProgressBar("Smoothing Terrain", "Progress", smoothProgress/smoothAmount);
         }
 
         terrainData.SetHeights(0, 0, heightMap);
-        terrainData.SetHeights(0, 0, heightMap);
-        terrainData.SetHeights(0, 0, heightMap);
+        //Gets rid of window
+        EditorUtility.ClearProgressBar();
     }
 
 

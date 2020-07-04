@@ -35,9 +35,13 @@ public class CustomTerrainEditor : Editor
     SerializedProperty MPDheightMax;
     SerializedProperty MPDheightDampenerPower;
     SerializedProperty MPDroughness;
+    SerializedProperty smoothAmount;
 
     GUITableState perlinParameterTable;
     SerializedProperty perlinParameters;
+
+    GUITableState splatMapTable;
+    SerializedProperty splatHeights;
 
     //fold outs -----------------------
     bool showRandom = false;
@@ -47,6 +51,7 @@ public class CustomTerrainEditor : Editor
     bool showVoronoi = false;
     bool showMidpoint = false;
     bool showSmooth = false;
+    bool showSplatMaps = false;
 
     //everytime we add something new in editor, terrain will renable and rerun initialization
     //Dont need to press play everytime to see changes
@@ -76,6 +81,9 @@ public class CustomTerrainEditor : Editor
         MPDheightMax = serializedObject.FindProperty("MPDheightMax");
         MPDheightDampenerPower = serializedObject.FindProperty("MPDheightDampenerPower");
         MPDroughness = serializedObject.FindProperty("MPDroughness");
+        smoothAmount = serializedObject.FindProperty("smoothAmount");
+        splatMapTable = new GUITableState("splatMapTable");
+        splatHeights = serializedObject.FindProperty("splatHeights");
     }
 
     //Graphical user interface we will see in inspector for custom terrain editor
@@ -219,9 +227,33 @@ public class CustomTerrainEditor : Editor
                 terrain.MidpointDisplacement();
             }
         }
+        showSplatMaps = EditorGUILayout.Foldout(showSplatMaps, "Splat Maps");
+        if (showSplatMaps)
+        {
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Label("Splat Maps", EditorStyles.boldLabel);
+            splatMapTable = GUITableLayout.DrawTable(splatMapTable, serializedObject.FindProperty("splatHeights"));
+            GUILayout.Space(20);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("+"))
+            {
+                terrain.AddnewSplatHeight();
+            }
+            if (GUILayout.Button("-"))
+            {
+                terrain.RemoveSplatHeight();
+            }
+            EditorGUILayout.EndHorizontal();
+            if(GUILayout.Button("Apply SplatMaps"))
+            {
+                terrain.SplatMaps();
+            }
+        }
         showSmooth = EditorGUILayout.Foldout(showSmooth, "Smooth");
         if (showSmooth)
         {
+            EditorGUILayout.IntSlider(smoothAmount, 1, 10, new GUIContent("smoothAmount"));
             if (GUILayout.Button("Smooth"))
             {
                 terrain.Smooth();
