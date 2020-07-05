@@ -36,6 +36,11 @@ public class CustomTerrainEditor : Editor
     SerializedProperty MPDheightDampenerPower;
     SerializedProperty MPDroughness;
     SerializedProperty smoothAmount;
+   /* SerializedProperty noisex;
+    SerializedProperty noisey;
+    SerializedProperty noiseMultiplier;
+    SerializedProperty splatOffset;
+    */
 
     GUITableState perlinParameterTable;
     SerializedProperty perlinParameters;
@@ -84,6 +89,11 @@ public class CustomTerrainEditor : Editor
         smoothAmount = serializedObject.FindProperty("smoothAmount");
         splatMapTable = new GUITableState("splatMapTable");
         splatHeights = serializedObject.FindProperty("splatHeights");
+       /* noisex = serializedObject.FindProperty("noisex");
+        noisey = serializedObject.FindProperty("noisey");
+        noiseMultiplier = serializedObject.FindProperty("noiseMultiplier");
+        splatOffset = serializedObject.FindProperty("splatOffset");
+        */
     }
 
     //Graphical user interface we will see in inspector for custom terrain editor
@@ -230,8 +240,17 @@ public class CustomTerrainEditor : Editor
         showSplatMaps = EditorGUILayout.Foldout(showSplatMaps, "Splat Maps");
         if (showSplatMaps)
         {
+            
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Label("Splat Maps", EditorStyles.boldLabel);
+
+            //Sliders for modifying blend, for all the same modifications
+            /*EditorGUILayout.Slider(noisex, 0, 0.1f, new GUIContent("Noise x value"));
+            EditorGUILayout.Slider(noisey, 0.001f, 1, new GUIContent("Noise y value"));
+            EditorGUILayout.Slider(noiseMultiplier, 0.001f, 1, new GUIContent("Noise Multiplier"));
+            EditorGUILayout.Slider(splatOffset, 0, 1, new GUIContent("Offset/Blend value "));
+            */
+
             splatMapTable = GUITableLayout.DrawTable(splatMapTable, serializedObject.FindProperty("splatHeights"));
             GUILayout.Space(20);
 

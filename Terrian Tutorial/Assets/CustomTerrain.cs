@@ -60,6 +60,9 @@ public class CustomTerrain : MonoBehaviour {
     public float MPDheightDampenerPower = 2.0f;
     public float MPDroughness = 2.0f;
 
+
+    
+
     //Smooth
     public int smoothAmount = 1;
 
@@ -81,6 +84,10 @@ public class CustomTerrain : MonoBehaviour {
         public Vector2 tileOffset = new Vector2(0, 0);
         //How big it will tile across surface
         public Vector2 tileSize = new Vector2(50, 50);
+        public float noisex = 0.01f;
+        public float noisey = 0.01f;
+        public float noiseMultiplier = 0.1f;
+        public float splatOffset = 0.1f;
         public bool remove = false;
     }
 
@@ -177,9 +184,14 @@ public class CustomTerrain : MonoBehaviour {
                 //Loop thru textures
                 for(int i = 0; i < splatHeights.Count; i++)
                 {
+                    //Will use perlin noise so it doesnt blend in a straight line
+                    //Must be small so you dont notice wave
+                    float noise = Mathf.PerlinNoise(x * splatHeights[i].noisex, y * splatHeights[i].noisey) * splatHeights[i].noiseMultiplier;
+                    //offset used for overlapping textures making a blend effect
+                    float offset = splatHeights[i].splatOffset + noise;
                     //Find start and stop height
-                    float thisHeightStart = splatHeights[i].minHeight;
-                    float thisHeightStop = splatHeights[i].maxHeight;
+                    float thisHeightStart = splatHeights[i].minHeight - offset;
+                    float thisHeightStop = splatHeights[i].maxHeight + offset;
                     //If values are in between start and stop
                     //Set value for that texture to 1
                     if((heightMap[x,y]>= thisHeightStart && heightMap[x,y]<= thisHeightStop))
