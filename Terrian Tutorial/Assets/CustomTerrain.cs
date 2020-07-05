@@ -162,6 +162,60 @@ public class CustomTerrain : MonoBehaviour {
         }
         //Like terrain.setHeights, applies textures into list
         terrainData.splatPrototypes = newSplatPrototypes;
+
+        //Get our heights
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+        float[,,] splatmapData = new float[terrainData.alphamapWidth, terrainData.alphamapHeight, terrainData.alphamapLayers];
+        
+        //Loop through every position in splat map
+        for(int y =0; y<terrainData.alphamapHeight; y++)
+        {
+            for(int x =0; x < terrainData.alphamapWidth; x++)
+            {
+                //Textures stored in array, layers = amount of textures we have
+                float[] splat = new float[terrainData.alphamapLayers];
+                //Loop thru textures
+                for(int i = 0; i < splatHeights.Count; i++)
+                {
+                    //Find start and stop height
+                    float thisHeightStart = splatHeights[i].minHeight;
+                    float thisHeightStop = splatHeights[i].maxHeight;
+                    //If values are in between start and stop
+                    //Set value for that texture to 1
+                    if((heightMap[x,y]>= thisHeightStart && heightMap[x,y]<= thisHeightStop))
+                    {
+                        splat[i] = 1;
+                    }
+                }
+                //Array is adding up to more than 1, we must normalize vectors
+                //Normalize vector means dividing each value by its length, if 2 textures are set to 1, divide by 2
+                NormalizeVector(splat);
+                //Assign back into splatmap data
+                for(int j = 0; j < splatHeights.Count; j++)
+                {
+                    splatmapData[x, y, j] = splat[j];
+                }
+
+            }
+        }
+        terrainData.SetAlphamaps(0, 0, splatmapData);
+    }
+
+    //Take in array of floats
+    //Used for splatmaps
+    void NormalizeVector(float[] v)
+    {
+        float total = 0;
+        //Gets total of every number in array
+        for(int i = 0; i < v.Length; i++)
+        {
+            total += v[i];
+        }
+        //Divide each number by total
+        for(int i = 0; i < v.Length; i++)
+        {
+            v[i] /= total;
+        }
     }
 
 
