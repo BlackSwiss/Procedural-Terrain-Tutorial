@@ -96,6 +96,9 @@ public class CustomTerrainEditor : Editor
         */
     }
 
+
+    //Keeps track of where you scroll
+    Vector2 scrollPos;
     //Graphical user interface we will see in inspector for custom terrain editor
     //Will get long
     //Display loop for GUI inspector
@@ -108,6 +111,13 @@ public class CustomTerrainEditor : Editor
 
         //Link to script on terrain not terrain itself
         CustomTerrain terrain = (CustomTerrain)target;
+
+        //Scrollbar starting code
+        Rect r = EditorGUILayout.BeginVertical();
+        //If it exceeds height or width it will give scroll bar
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(r.width), GUILayout.Height(r.height));
+        //Increase indent level in inspector, how far from left hand side, used so foldout arrows dont get covered up
+        EditorGUI.indentLevel++;
 
         //If ticked will reset everytime you generate random
         EditorGUILayout.PropertyField(reset);
@@ -285,7 +295,9 @@ public class CustomTerrainEditor : Editor
             terrain.resetTerrain();
         }
 
-        
+        //Scrollbar ending code
+        EditorGUILayout.EndScrollView();
+        EditorGUILayout.EndVertical();
 
         //Must end with this, apply new changes
         serializedObject.ApplyModifiedProperties();
