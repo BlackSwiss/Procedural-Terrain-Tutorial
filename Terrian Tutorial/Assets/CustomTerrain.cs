@@ -80,6 +80,9 @@ public class CustomTerrain : MonoBehaviour {
         public Texture2D texture = null;
         public float minHeight = 0.1f;
         public float maxHeight = 0.2f;
+        //Must have a slope
+        public float minSlope = 0;
+        public float maxSlope = 1.5f;
         //How far across tile you want to start before painting
         public Vector2 tileOffset = new Vector2(0, 0);
         //How big it will tile across surface
@@ -147,6 +150,35 @@ public class CustomTerrain : MonoBehaviour {
         splatHeights = keptSplatHeights;
     }
 
+    //Return a float of the steepness value
+    //Pass height map, current x and y, width and height(dont need to but makes more compact)
+    float GetSteepness(float[,] heightmap, int x , int y , int width, int height)
+    {
+        //X and y position from height map
+        float h = heightmap[x, y];
+        //Get neighbour positions
+        int nx = x + 1;
+        int ny = y + 1;
+
+        //if on the upper edge of the map find gradient by going backward
+        //Tests if were on the edge of the heightmap
+        //wrap around and get the pixel from the beginning as if it was seamless
+        if (nx > width - 1) nx = x - 1;
+        if (ny > height - 1) ny = y - 1;
+
+        //heightmap value of neighbours - height
+        float dx = heightmap[nx, y] - h;
+        float dy = heightmap[x, ny] - h;
+        //Store into a vector 2 so we can use .magnitude
+        Vector2 gradient = new Vector2(dx, dy);
+
+        //Or pythagorean theorem
+        float steep = gradient.magnitude;
+
+        return steep;
+
+    }
+
     public void SplatMaps()
     {
         //New array
@@ -192,9 +224,14 @@ public class CustomTerrain : MonoBehaviour {
                     //Find start and stop height
                     float thisHeightStart = splatHeights[i].minHeight - offset;
                     float thisHeightStop = splatHeights[i].maxHeight + offset;
+                    //Must test for steepness for blending
+                    //Current heightmap position, width and height so we dont go outside of range
+                    float steepness = terrainData.GetSteepness(y / (float)terrainData.alphamapHeight, x / (float)terrainData.alphamapWidth);
+                    //float steepness = GetSteepness(heightMap, x, y, terrainData.heightmapWidth, terrainData.heightmapHeight);
+
                     //If values are in between start and stop
                     //Set value for that texture to 1
-                    if((heightMap[x,y]>= thisHeightStart && heightMap[x,y]<= thisHeightStop))
+                    if((heightMap[x,y]>= thisHeightStart && heightMap[x,y]<= thisHeightStop) && (steepness >= splatHeights[i].minSlope && steepness <= splatHeights[i].maxSlope))
                     {
                         splat[i] = 1;
                     }
