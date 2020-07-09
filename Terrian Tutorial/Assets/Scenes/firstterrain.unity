@@ -371,10 +371,10 @@ MonoBehaviour:
     mPerlinOffsetY: 0
     remove: 0
   splatHeights:
-  - texture: {fileID: 2800000, guid: 79d5431cd68194d08a40d2bbe4ebcef9, type: 3}
-    minHeight: 0.2
-    maxHeight: 0.6
-    minSlope: 45
+  - texture: {fileID: 2800000, guid: 89d7186bb29164a87905f17c084e4206, type: 3}
+    minHeight: 0
+    maxHeight: 1
+    minSlope: 0
     maxSlope: 90
     tileOffset: {x: 0, y: 0}
     tileSize: {x: 50, y: 50}
@@ -382,30 +382,6 @@ MonoBehaviour:
     noisey: 0.01
     noiseMultiplier: 0.1
     splatOffset: 0.02
-    remove: 0
-  - texture: {fileID: 2800000, guid: 70ad2695569e2454ea6caf1faa1853c0, type: 3}
-    minHeight: 0.1
-    maxHeight: 0.2
-    minSlope: 0
-    maxSlope: 50
-    tileOffset: {x: 0, y: 0}
-    tileSize: {x: 50, y: 50}
-    noisex: 0.01
-    noisey: 0.01
-    noiseMultiplier: 0.1
-    splatOffset: 0.1
-    remove: 0
-  - texture: {fileID: 2800000, guid: dc5e2701b82d34a9ab7da0717fe07076, type: 3}
-    minHeight: 0.1
-    maxHeight: 0.2
-    minSlope: 50
-    maxSlope: 90
-    tileOffset: {x: 0, y: 0}
-    tileSize: {x: 50, y: 50}
-    noisex: 0.01
-    noisey: 0.01
-    noiseMultiplier: 0.1
-    splatOffset: 0.1
     remove: 0
   perlinOctaves: 4
   perlinPersistance: 3.19
