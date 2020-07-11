@@ -79,10 +79,42 @@ public class TextureCreatorWindow : EditorWindow {
             {
                 for (int x = 0; x < w; x++)
                 {
-                    //Set pvalue using fBM(fractual brownian motion) function
-                    pValue = Utils.fBM((x + perlinOffsetX) * perlinXScale, (y + perlinOffsetY) * perlinYScale, perlinOctaves, perlinPersistance) * perlinHeightScale;
+                    if (seamlessToggle)
+                    {
+                        //Percentage of height and width
+                        //how much we need to blend
+                        float u = (float)x / (float)w;
+                        float v = (float)y / (float)h;
+                        //Perlin noise value at (x,y)
+                        float noise00 = Utils.fBM((x + perlinOffsetX) * perlinXScale, (y + perlinOffsetY) * perlinYScale, perlinOctaves, perlinPersistance) * perlinYScale;
+                        //Perlin noise value at (0,1)
+                        float noise01 = Utils.fBM((x + perlinOffsetX) * perlinXScale, (y + perlinOffsetY + h) * perlinYScale, perlinOctaves, perlinPersistance) * perlinHeightScale;
+                        //Perlin noise value at (1,0)
+                        float noise10 = Utils.fBM((x + perlinOffsetX+w) * perlinXScale, (y + perlinOffsetY) * perlinYScale, perlinOctaves, perlinPersistance) * perlinHeightScale;
+                        //Perlin noise value at (1,1)
+                        float noise11 = Utils.fBM((x + perlinOffsetX+w) * perlinXScale, (y + perlinOffsetY+h) * perlinYScale, perlinOctaves, perlinPersistance) * perlinYScale;
+                        //Get different blended amounts of perlin noise so it is seamless
+                        float noiseTotal = u * v * noise00 + u * (1 - v) * noise01 + (1 - u) * v * noise10 + (1 - u) * (1 - v) * noise11;
 
+                        //Split into rgb values then find gray value
+                        float value = (int)(256 * noiseTotal) + 50;
+                        //Clamp between 0 to 255 so it wont exceed, want to add up to a grayscale value
+                        float r = Mathf.Clamp((int)noise00, 0, 255);
+                        float g = Mathf.Clamp(value, 0, 255);
+                        float b = Mathf.Clamp(value+50, 0, 255);
+                        float a = Mathf.Clamp(value+100, 0, 255);
+
+                        //Add and divide by 3 so it is grayscale
+                        pValue = (r + g + b) / (3 * 255.0f);
+
+                    }
+                    else
+                    {
+                        //Set pvalue using fBM(fractual brownian motion) function
+                        pValue = Utils.fBM((x + perlinOffsetX) * perlinXScale, (y + perlinOffsetY) * perlinYScale, perlinOctaves, perlinPersistance) * perlinHeightScale;
+                    }
                     //Set color value to pvalue
+                    
                     float colValue = pValue;
                     //Pixel color set to color value to get grayscale, set alpha value around the toggle, 0 or 1
                     pixCol = new Color(colValue, colValue, colValue, alphaToggle ? colValue : 1);
