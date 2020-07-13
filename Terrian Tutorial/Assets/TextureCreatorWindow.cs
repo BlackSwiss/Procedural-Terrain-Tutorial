@@ -23,6 +23,9 @@ public class TextureCreatorWindow : EditorWindow {
     //Remap all values
     bool mapToggle = false;
 
+    float brightness = 0.5f;
+    float contrast = 0.5f;
+
     Texture2D pTexture;
 
     [MenuItem("Window/TextureCreatorWindow")]
@@ -53,6 +56,8 @@ public class TextureCreatorWindow : EditorWindow {
         perlinHeightScale = EditorGUILayout.Slider("Height Scale", perlinHeightScale, 0, 1);
         perlinOffsetX = EditorGUILayout.IntSlider("Offset X", perlinOffsetX, 0, 10000);
         perlinOffsetY = EditorGUILayout.IntSlider("Offset Y", perlinOffsetY, 0, 10000);
+        brightness = EditorGUILayout.Slider("Brightness", brightness, 0, 2);
+        contrast = EditorGUILayout.Slider("Contrast", contrast, 0, 2);
         //Toggles
         alphaToggle = EditorGUILayout.Toggle("Alpha?", alphaToggle);
         mapToggle = EditorGUILayout.Toggle("Map?", mapToggle);
@@ -64,6 +69,9 @@ public class TextureCreatorWindow : EditorWindow {
         
         //Push to right size
         GUILayout.FlexibleSpace();
+
+        float minColor = 1;
+        float maxColor = 0;
 
         //Button same size as the image
         //Allows for more
@@ -113,13 +121,39 @@ public class TextureCreatorWindow : EditorWindow {
                         //Set pvalue using fBM(fractual brownian motion) function
                         pValue = Utils.fBM((x + perlinOffsetX) * perlinXScale, (y + perlinOffsetY) * perlinYScale, perlinOctaves, perlinPersistance) * perlinHeightScale;
                     }
-                    //Set color value to pvalue
-                    
-                    float colValue = pValue;
+                    //using brightness equation
+                    float colValue = contrast*(pValue - 0.5f)+0.5f*brightness;
+
+                    //Will be extreme ranges once finished
+                    if (minColor > colValue) minColor = colValue;
+                    if (maxColor < colValue) maxColor = colValue;
+
                     //Pixel color set to color value to get grayscale, set alpha value around the toggle, 0 or 1
                     pixCol = new Color(colValue, colValue, colValue, alphaToggle ? colValue : 1);
                     //Set pixel
                     pTexture.SetPixel(x, y, pixCol);
+                }
+            }
+            if (mapToggle)
+            {
+                
+                for(int y = 0; y < h; y++)
+                {
+                    for(int x = 0; x < w; x++)
+                    {
+                        //pixel color and process pixel color
+                        pixCol = pTexture.GetPixel(x, y);
+                        //Setting pixel color as red as they are the same value and can use r g b 
+                        float colValue = pixCol.r;
+                        //Map color values
+                        colValue = Utils.Map(colValue, minColor, maxColor, 0, 1);
+                        //Put new values in all colors
+                        pixCol.r = colValue;
+                        pixCol.g = colValue;
+                        pixCol.b = colValue;
+                        pTexture.SetPixel(x, y, pixCol);
+
+                    }
                 }
             }
             //Apply to texture

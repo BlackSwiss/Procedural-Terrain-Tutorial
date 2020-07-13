@@ -27,4 +27,10 @@ public static class Utils{
         return total / maxValue;
     }
 
+    //Rescaling image
+    public static float Map(float value, float originalMin, float originalMax, float targetMin,float targetMax)
+    {
+        return (value - originalMin) * (targetMax - targetMin) / (originalMax - originalMin) + targetMin;
+    }
+
 }
