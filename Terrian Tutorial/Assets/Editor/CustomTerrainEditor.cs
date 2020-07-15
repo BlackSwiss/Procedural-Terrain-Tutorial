@@ -57,6 +57,9 @@ public class CustomTerrainEditor : Editor
     bool showMidpoint = false;
     bool showSmooth = false;
     bool showSplatMaps = false;
+    bool showHeights = false;
+
+    Texture2D hmTexture;
 
     //everytime we add something new in editor, terrain will renable and rerun initialization
     //Dont need to press play everytime to see changes
@@ -89,6 +92,8 @@ public class CustomTerrainEditor : Editor
         smoothAmount = serializedObject.FindProperty("smoothAmount");
         splatMapTable = new GUITableState("splatMapTable");
         splatHeights = serializedObject.FindProperty("splatHeights");
+
+        hmTexture = new Texture2D(513, 513, TextureFormat.ARGB32, false);
        /* noisex = serializedObject.FindProperty("noisex");
         noisey = serializedObject.FindProperty("noisey");
         noiseMultiplier = serializedObject.FindProperty("noiseMultiplier");
@@ -139,12 +144,12 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.PropertyField(randomHeightRange);
 
             //Puts a button on the screen and allows you to click it, takes a string, if statement executes when clicked
-            if(GUILayout.Button("Random Heights"))
+            if (GUILayout.Button("Random Heights"))
             {
                 terrain.RandomTerrain();
             }
 
-            
+
         }
 
         //Make a fold out called load heights
@@ -213,7 +218,7 @@ public class CustomTerrainEditor : Editor
                 terrain.RemovePerlin();
             }
             EditorGUILayout.EndHorizontal();
-            if(GUILayout.Button("Apply Multiple Perlin"))
+            if (GUILayout.Button("Apply Multiple Perlin"))
             {
                 terrain.MultiplePerlinTerrain();
             }
@@ -250,7 +255,7 @@ public class CustomTerrainEditor : Editor
         showSplatMaps = EditorGUILayout.Foldout(showSplatMaps, "Splat Maps");
         if (showSplatMaps)
         {
-            
+
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Label("Splat Maps", EditorStyles.boldLabel);
 
@@ -274,7 +279,7 @@ public class CustomTerrainEditor : Editor
                 terrain.RemoveSplatHeight();
             }
             EditorGUILayout.EndHorizontal();
-            if(GUILayout.Button("Apply SplatMaps"))
+            if (GUILayout.Button("Apply SplatMaps"))
             {
                 terrain.SplatMaps();
             }
@@ -295,13 +300,50 @@ public class CustomTerrainEditor : Editor
             terrain.resetTerrain();
         }
 
-        //Scrollbar ending code
-        EditorGUILayout.EndScrollView();
-        EditorGUILayout.EndVertical();
+        //Display height map
+        showHeights = EditorGUILayout.Foldout(showHeights, "Height Map");
+        if (showHeights)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
 
-        //Must end with this, apply new changes
-        serializedObject.ApplyModifiedProperties();
-    }
+            int hmtSize = (int)(EditorGUIUtility.currentViewWidth - 100);
+            //Texture being displayed as a label
+            GUILayout.Label(hmTexture, GUILayout.Width(hmtSize), GUILayout.Height(hmtSize));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            //Center button
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            //Button, will be same width as texture
+            if (GUILayout.Button("Refresh", GUILayout.Width(hmtSize)))
+            {
+                //Get heightmap
+                float[,] heightMap = terrain.terrainData.GetHeights(0, 0, terrain.terrainData.heightmapWidth, terrain.terrainData.heightmapHeight);
+
+                //go around heightmap
+                for (int y = 0; y < terrain.terrainData.heightmapHeight; y++)
+                {
+                    for (int x = 0; x < terrain.terrainData.heightmapWidth; x++)
+                    {
+                        //set pixel color based on heightmap value
+                        hmTexture.SetPixel(x, y, new Color(heightMap[x, y], heightMap[x, y], heightMap[x, y], 1));
+                    }
+                }
+                hmTexture.Apply();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+            //Scrollbar ending code
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
+
+            //Must end with this, apply new changes
+            serializedObject.ApplyModifiedProperties();
+        }
+    
 
     // Use this for initialization
     void Start () {
