@@ -48,6 +48,11 @@ public class CustomTerrainEditor : Editor
     GUITableState splatMapTable;
     SerializedProperty splatHeights;
 
+    GUITableState vegetationTable;
+    SerializedProperty vegetation;
+    SerializedProperty maxTrees;
+    SerializedProperty treeSpacing;
+
     //fold outs -----------------------
     bool showRandom = false;
     bool showLoadHeights = false;
@@ -58,6 +63,7 @@ public class CustomTerrainEditor : Editor
     bool showSmooth = false;
     bool showSplatMaps = false;
     bool showHeights = false;
+    bool showVegetation = false;
 
     Texture2D hmTexture;
 
@@ -92,6 +98,10 @@ public class CustomTerrainEditor : Editor
         smoothAmount = serializedObject.FindProperty("smoothAmount");
         splatMapTable = new GUITableState("splatMapTable");
         splatHeights = serializedObject.FindProperty("splatHeights");
+        vegetationTable = new GUITableState("vegetationTable");
+        vegetation = serializedObject.FindProperty("vegetation");
+        maxTrees = serializedObject.FindProperty("maxTrees");
+        treeSpacing = serializedObject.FindProperty("treeSpacing");
 
         hmTexture = new Texture2D(513, 513, TextureFormat.ARGB32, false);
        /* noisex = serializedObject.FindProperty("noisex");
@@ -282,6 +292,32 @@ public class CustomTerrainEditor : Editor
             if (GUILayout.Button("Apply SplatMaps"))
             {
                 terrain.SplatMaps();
+            }
+        }
+        showVegetation = EditorGUILayout.Foldout(showVegetation, "Vegetation");
+        if (showVegetation)
+        {
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Label("Vegetation", EditorStyles.boldLabel);
+
+            EditorGUILayout.IntSlider(maxTrees, 0, 10000, new GUIContent("Maximum Trees"));
+            EditorGUILayout.IntSlider(treeSpacing, 2, 20, new GUIContent("Tree Spacing"));
+
+            vegetationTable = GUITableLayout.DrawTable(vegetationTable, serializedObject.FindProperty("vegetation"));
+            GUILayout.Space(20);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("+"))
+            {
+                terrain.AddNewVegetation();
+            }
+            if (GUILayout.Button("-")){
+                terrain.RemoveVegetation();
+            }
+            EditorGUILayout.EndHorizontal();
+            if(GUILayout.Button("Apply Vegetation"))
+            {
+                terrain.PlantVegetation();
             }
         }
         showSmooth = EditorGUILayout.Foldout(showSmooth, "Smooth");

@@ -94,6 +94,27 @@ public class CustomTerrain : MonoBehaviour {
         public bool remove = false;
     }
 
+    //VEGETATION --------------------------------------------
+    [System.Serializable]
+    public class Vegetation
+    {
+        public GameObject mesh;
+        public float minHeight = 0.1f;
+        public float maxHeight = 0.2f;
+        public float minSlope = 0;
+        public float maxSlope = 90;
+        public bool remove = false;
+    }
+    public List<Vegetation> vegetation = new List<Vegetation>()
+    {
+        new Vegetation()
+    };
+
+    public int maxTrees = 5000;
+    public int treeSpacing = 5;
+
+
+
     public List<SplatHeights> splatHeights = new List<SplatHeights>()
     {
         new SplatHeights()
@@ -122,6 +143,49 @@ public class CustomTerrain : MonoBehaviour {
         }
     }
 
+    //Vegetation methods for table
+    //Method used for placing trees/rocks/etc onto terrain
+    public void PlantVegetation()
+    {
+        //Create array of tree prototypes
+        TreePrototype[] newTreePrototypes;
+        //Set equal to length of table
+        newTreePrototypes = new TreePrototype[vegetation.Count];
+        //Keep track of index
+        int tindex = 0;
+        //Loop thru all
+        foreach(Vegetation t in vegetation)
+        {
+            //Get new version of current tree
+            newTreePrototypes[tindex] = new TreePrototype();
+            newTreePrototypes[tindex].prefab = t.mesh;
+            tindex++;
+        }
+        //Populates the table
+        terrainData.treePrototypes = newTreePrototypes;
+    }
+
+    //Add and remove methods for table
+    public void AddNewVegetation()
+    {
+        vegetation.Add(new Vegetation());
+    }
+
+    public void RemoveVegetation()
+    {
+        List<Vegetation> keptVegetation = new List<Vegetation>();
+        for(int i = 0; i < vegetation.Count; i++)
+        {
+            if (!vegetation[i].remove){
+                keptVegetation.Add(vegetation[i]);
+            }
+        }
+        if(keptVegetation.Count == 0)
+        {
+            keptVegetation.Add(vegetation[0]);
+        }
+        vegetation = keptVegetation;
+    }
 
     //Used for plus button on table
     //Add new height to list of splat heights
