@@ -163,6 +163,53 @@ public class CustomTerrain : MonoBehaviour {
         }
         //Populates the table
         terrainData.treePrototypes = newTreePrototypes;
+
+        //Create array of tree instances
+        List<TreeInstance> allVegetation = new List<TreeInstance>();
+        //First 2 for loops loop around the terrain x and z axis
+        //We cant use heightmap so must use x and z
+        for(int z = 0; z < terrainData.size.z;z += treeSpacing)
+        {
+            for(int x = 0; x < terrainData.size.x; x+= treeSpacing)
+            {
+                //For each tree, process where it will be on the terrain
+                for(int tp = 0; tp < terrainData.treePrototypes.Length; tp++)
+                {
+                    //Get height and reduce to 0-1
+                    float thisHeight = terrainData.GetHeight(x, z) / terrainData.size.y;
+                    float thisHeightStart = vegetation[tp].minHeight;
+                    float thisHeightEnd = vegetation[tp].maxHeight;
+
+                    //This if statement checks if the current tree can be placed at the specific height
+                    if (thisHeight >= thisHeightStart && thisHeight <= thisHeightEnd)
+                    {
+                        TreeInstance instance = new TreeInstance();
+                        //Set tree position between 0-1
+                        //Randomize positions
+                        instance.position = new Vector3((x + UnityEngine.Random.Range(-5.0f, 5.0f)) / terrainData.size.x, terrainData.GetHeight(x, z) / terrainData.size.y, (z +
+                            UnityEngine.Random.Range(-5.0f, 5.0f)) / terrainData.size.z);
+                        //Set tree rotation
+                        instance.rotation = UnityEngine.Random.Range(0, 360);
+                        //Type of tree in the list in order
+                        instance.prototypeIndex = tp;
+                        //Must have a color so trees arent invisible
+                        instance.color = Color.white;
+                        instance.lightmapColor = Color.white;
+                        //If we want to rescale instances we set here
+                        instance.heightScale = 0.95f;
+                        instance.widthScale = 0.95f;
+
+                        allVegetation.Add(instance);
+                        //Check if we havent gone over the max trees
+                        //Quit out and finish
+                        if (allVegetation.Count >= maxTrees) goto TREESDONE;
+                    }
+                }
+            }
+        }
+        //All trees in array will be added onto terrain
+        TREESDONE:
+        terrainData.treeInstances = allVegetation.ToArray();
     }
 
     //Add and remove methods for table
