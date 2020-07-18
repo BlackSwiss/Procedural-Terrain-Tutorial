@@ -12,6 +12,61 @@ using System.Linq;
 
 public class CustomTerrain : MonoBehaviour {
 
+    public enum TagType { Tag = 0, Layer = 1 }
+    [SerializeField]
+    int terrainLayer = -1;
+    void Awake()
+    {
+        SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+
+        SerializedProperty tagsProp = tagManager.FindProperty("tags");
+        AddTag(tagsProp, "Terrain", TagType.Tag);
+        AddTag(tagsProp, "Cloud", TagType.Tag);
+        AddTag(tagsProp, "Shore", TagType.Tag);
+        tagManager.ApplyModifiedProperties();
+
+        SerializedProperty layerProp = tagManager.FindProperty("layers");
+        terrainLayer = AddTag(layerProp, "Terrain", TagType.Layer);
+        tagManager.ApplyModifiedProperties();
+
+        //take this object
+        this.gameObject.tag = "Terrain";
+    }
+
+    int AddTag(SerializedProperty tagsProp,string newTag, TagType tType)
+    {
+        //Check if we found tag or layer
+        bool found = false;
+        //ensure the tag doesnt already exist
+        for(int i = 0; i < tagsProp.arraySize; i++)
+        {
+            SerializedProperty t = tagsProp.GetArrayElementAtIndex(i);
+            if (t.stringValue.Equals(newTag)) { found = true; return i; }
+        }
+        //add your new tag
+        if(!found && tType == TagType.Tag)
+        {
+            tagsProp.InsertArrayElementAtIndex(0);
+            SerializedProperty newTagProp = tagsProp.GetArrayElementAtIndex(0);
+            newTagProp.stringValue = newTag;
+        }
+        //add new layer
+        else if(!found && tType == TagType.Layer)
+        {
+            for(int j = 8; j < tagsProp.arraySize; j++)
+            {
+                SerializedProperty newLayer = tagsProp.GetArrayElementAtIndex(j);
+                //add layer in next empty slot
+                if (newLayer.stringValue == "")
+                {
+                    Debug.Log("Adding New Layer: " + newTag);
+                    newLayer.stringValue = newTag;
+                }
+            }
+        }
+    }
+
+
     //Min and max height range
     //Can just use the name and not the value between scripts
     public Vector2 randomHeightRange = new Vector2(0, 0.1f);
