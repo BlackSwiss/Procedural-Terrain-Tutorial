@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 2112693667}
   - component: {fileID: 2112693666}
   - component: {fileID: 2112693669}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Terrain
   m_TagString: Terrain
   m_Icon: {fileID: 0}
@@ -343,24 +343,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomHeightRange: {x: 0, y: 0.1}
-  heightMapImage: {fileID: 2800000, guid: b82d658f86766d3448d6a5c79443608d, type: 3}
-  heightMapScale: {x: 2, y: 0.1, z: 2}
-  reset: 0
-  perlinXScale: 0.002
-  perlinYScale: 0.002
-  perlinOffsetX: 7657
-  perlinOffsetY: 6691
-  voronoiFallOff: 10
-  voronoiDropOff: 10
-  voronoiMinHeight: 0.07
-  voronoiMaxHeight: 0.23
-  voronoiPeaks: 10
-  voronoiType: 3
-  MPDheightMin: -10
-  MPDheightMax: 10
+  heightMapImage: {fileID: 0}
+  heightMapScale: {x: 1, y: 1, z: 1}
+  reset: 1
+  perlinXScale: 0.01
+  perlinYScale: 0.01
+  perlinOffsetX: 0
+  perlinOffsetY: 0
+  voronoiFallOff: 0.2
+  voronoiDropOff: 0.6
+  voronoiMinHeight: 0.1
+  voronoiMaxHeight: 0.5
+  voronoiPeaks: 5
+  voronoiType: 0
+  MPDheightMin: -2
+  MPDheightMax: 2
   MPDheightDampenerPower: 2
   MPDroughness: 2
-  smoothAmount: 8
+  smoothAmount: 1
   perlinParameters:
   - mPerlinXScale: 0.01
     mPerlinYScale: 0.01
@@ -371,35 +371,30 @@ MonoBehaviour:
     mPerlinOffsetY: 0
     remove: 0
   vegetation:
-  - mesh: {fileID: 100000, guid: 25fa881dbd110e38a00062d88f962b59, type: 3}
-    minHeight: 0.2
-    maxHeight: 1
-    minSlope: 0
-    maxSlope: 90
-    remove: 0
-  - mesh: {fileID: 100000, guid: 10337ad1bd11abca11002b7b44295342, type: 3}
-    minHeight: 0
+  - mesh: {fileID: 0}
+    minHeight: 0.1
     maxHeight: 0.2
     minSlope: 0
     maxSlope: 90
     remove: 0
-  maxTrees: 7483
-  treeSpacing: 13
+  maxTrees: 5000
+  treeSpacing: 5
   splatHeights:
-  - texture: {fileID: 2800000, guid: 89d7186bb29164a87905f17c084e4206, type: 3}
-    minHeight: 0
-    maxHeight: 1
+  - texture: {fileID: 0}
+    minHeight: 0.1
+    maxHeight: 0.2
     minSlope: 0
-    maxSlope: 90
+    maxSlope: 1.5
     tileOffset: {x: 0, y: 0}
     tileSize: {x: 50, y: 50}
     noisex: 0.01
     noisey: 0.01
     noiseMultiplier: 0.1
-    splatOffset: 0.02
+    splatOffset: 0.1
     remove: 0
-  perlinOctaves: 4
-  perlinPersistance: 3.19
-  perlinHeightScale: 0.233
+  perlinOctaves: 3
+  perlinPersistance: 8
+  perlinHeightScale: 0.09
   terrain: {fileID: 2112693667}
   terrainData: {fileID: 15600000, guid: e01ffdad697fce442bb2b7db876afb36, type: 2}
+  terrainLayer: 9
