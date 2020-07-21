@@ -189,21 +189,43 @@ public class CustomTerrain : MonoBehaviour {
                         //Randomize positions
                         instance.position = new Vector3((x + UnityEngine.Random.Range(-5.0f, 5.0f)) / terrainData.size.x, terrainData.GetHeight(x, z) / terrainData.size.y, (z +
                             UnityEngine.Random.Range(-5.0f, 5.0f)) / terrainData.size.z);
-                        //Set tree rotation
-                        instance.rotation = UnityEngine.Random.Range(0, 360);
-                        //Type of tree in the list in order
-                        instance.prototypeIndex = tp;
-                        //Must have a color so trees arent invisible
-                        instance.color = Color.white;
-                        instance.lightmapColor = Color.white;
-                        //If we want to rescale instances we set here
-                        instance.heightScale = 0.95f;
-                        instance.widthScale = 0.95f;
 
-                        allVegetation.Add(instance);
-                        //Check if we havent gone over the max trees
-                        //Quit out and finish
-                        if (allVegetation.Count >= maxTrees) goto TREESDONE;
+                        //Fix so only a small portion of tree is clipping thru floor
+                        //Taking its value and finding out where it is in terms of the terrain
+                        //
+                        Vector3 treeWorldPos = new Vector3(instance.position.x * terrainData.size.x,
+                            instance.position.y * terrainData.size.y,
+                            instance.position.z * terrainData.size.z) + this.transform.position;
+
+                        RaycastHit hit;
+                        //Layer mask is layer terrain is on, on terrain layer
+                        int layerMask = 1 << terrainLayer;
+                        //Create array at (worldpos, cast at -vector3.up, wait for hit, casting 100 units, add in mask)
+                        if(Physics.Raycast(treeWorldPos, -Vector3.up, out hit, 100, layerMask) || Physics.Raycast(treeWorldPos, Vector3.up, out hit, 100, layerMask))
+                        {
+                            //Find tree height using hit point from raycast
+                            float treeHeight = (hit.point.y - this.transform.position.y) / terrainData.size.y;
+                            //Use new x and y
+                            instance.position = new Vector3(instance.position.x, treeHeight, instance.position.z);
+
+                            //If tree cant raycast on the terrain then dont use it
+                            //Set tree rotation
+                            instance.rotation = UnityEngine.Random.Range(0, 360);
+                            //Type of tree in the list in order
+                            instance.prototypeIndex = tp;
+                            //Must have a color so trees arent invisible
+                            instance.color = Color.white;
+                            instance.lightmapColor = Color.white;
+                            //If we want to rescale instances we set here
+                            instance.heightScale = 0.95f;
+                            instance.widthScale = 0.95f;
+
+                            allVegetation.Add(instance);
+                            //Check if we havent gone over the max trees
+                            //Quit out and finish
+                            if (allVegetation.Count >= maxTrees) goto TREESDONE;
+                        }
+                       
                     }
                 }
             }

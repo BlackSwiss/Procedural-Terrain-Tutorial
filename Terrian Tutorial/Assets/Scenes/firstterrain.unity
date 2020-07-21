@@ -371,14 +371,14 @@ MonoBehaviour:
     mPerlinOffsetY: 0
     remove: 0
   vegetation:
-  - mesh: {fileID: 0}
-    minHeight: 0.1
+  - mesh: {fileID: 100000, guid: 02e48269f8d554fbca75435761452392, type: 3}
+    minHeight: 0
     maxHeight: 0.2
     minSlope: 0
     maxSlope: 90
     remove: 0
   maxTrees: 5000
-  treeSpacing: 5
+  treeSpacing: 11
   splatHeights:
   - texture: {fileID: 0}
     minHeight: 0.1
