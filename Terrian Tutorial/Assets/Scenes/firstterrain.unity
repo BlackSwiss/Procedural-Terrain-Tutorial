@@ -373,12 +373,20 @@ MonoBehaviour:
   vegetation:
   - mesh: {fileID: 100000, guid: 02e48269f8d554fbca75435761452392, type: 3}
     minHeight: 0
-    maxHeight: 0.2
+    maxHeight: 1
     minSlope: 0
-    maxSlope: 90
+    maxSlope: 5
+    minScale: 0
+    maxScale: 1
+    colour1: {r: 1, g: 0.9643257, b: 0.15566039, a: 1}
+    colour2: {r: 0.9339623, g: 0, b: 0, a: 1}
+    lightColour: {r: 0.9528302, g: 0.9298342, b: 0.04045032, a: 1}
+    minRotation: 0
+    maxRotation: 360
+    density: 1
     remove: 0
-  maxTrees: 5000
-  treeSpacing: 11
+  maxTrees: 9689
+  treeSpacing: 6
   splatHeights:
   - texture: {fileID: 0}
     minHeight: 0.1

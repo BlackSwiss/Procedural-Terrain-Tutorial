@@ -99,11 +99,21 @@ public class CustomTerrain : MonoBehaviour {
     [System.Serializable]
     public class Vegetation
     {
+        //More to add but some objects that affect trees
         public GameObject mesh;
         public float minHeight = 0.1f;
         public float maxHeight = 0.2f;
         public float minSlope = 0;
         public float maxSlope = 90;
+        public float minScale = 0.5f;
+        public float maxScale = 1.0f;
+        public Color colour1 = Color.white;
+        public Color colour2 = Color.white;
+        public Color lightColour = Color.white;
+        public float minRotation = 0;
+        public float maxRotation = 360;
+        //Control density within prototypes
+        public float density = 0.5f;
         public bool remove = false;
     }
     public List<Vegetation> vegetation = new List<Vegetation>()
@@ -176,13 +186,23 @@ public class CustomTerrain : MonoBehaviour {
                 //For each tree, process where it will be on the terrain
                 for(int tp = 0; tp < terrainData.treePrototypes.Length; tp++)
                 {
+
+                    //Density check
+                    //If random value is greater than density value, dont plant
+                    //Lower value = more space
+                    if (UnityEngine.Random.Range(0.0f, 1.0f) > vegetation[tp].density) break;
+
                     //Get height and reduce to 0-1
                     float thisHeight = terrainData.GetHeight(x, z) / terrainData.size.y;
                     float thisHeightStart = vegetation[tp].minHeight;
                     float thisHeightEnd = vegetation[tp].maxHeight;
 
+                    //Get steepness
+                    //Values must be normalized so get x and z and divide by dimensions
+                    float steepness = terrainData.GetSteepness(x / (float)terrainData.size.x, z / (float)terrainData.size.z);
+
                     //This if statement checks if the current tree can be placed at the specific height
-                    if (thisHeight >= thisHeightStart && thisHeight <= thisHeightEnd)
+                    if ((thisHeight >= thisHeightStart && thisHeight <= thisHeightEnd) && (steepness >= vegetation[tp].minSlope && steepness <= vegetation[tp].maxSlope))
                     {
                         TreeInstance instance = new TreeInstance();
                         //Set tree position between 0-1
@@ -201,7 +221,9 @@ public class CustomTerrain : MonoBehaviour {
                         //Layer mask is layer terrain is on, on terrain layer
                         int layerMask = 1 << terrainLayer;
                         //Create array at (worldpos, cast at -vector3.up, wait for hit, casting 100 units, add in mask)
-                        if(Physics.Raycast(treeWorldPos, -Vector3.up, out hit, 100, layerMask) || Physics.Raycast(treeWorldPos, Vector3.up, out hit, 100, layerMask))
+                        //Lift up by 10 units so can be placed on flat areas or down by 10 units
+                        //Need to lift so it can hit terrain even if its flat
+                        if (Physics.Raycast(treeWorldPos + new Vector3(0, 10, 0), -Vector3.up, out hit, 100, layerMask) || Physics.Raycast(treeWorldPos - new Vector3(0, 10, 0), Vector3.up, out hit, 100, layerMask))
                         {
                             //Find tree height using hit point from raycast
                             float treeHeight = (hit.point.y - this.transform.position.y) / terrainData.size.y;
@@ -210,22 +232,40 @@ public class CustomTerrain : MonoBehaviour {
 
                             //If tree cant raycast on the terrain then dont use it
                             //Set tree rotation
-                            instance.rotation = UnityEngine.Random.Range(0, 360);
+                            instance.rotation = UnityEngine.Random.Range(vegetation[tp].minRotation, vegetation[tp].minRotation);
                             //Type of tree in the list in order
                             instance.prototypeIndex = tp;
                             //Must have a color so trees arent invisible
-                            instance.color = Color.white;
-                            instance.lightmapColor = Color.white;
+                            //Now customizable
+                            //Picks a random color out of 2 colors, Lerp blends both colors and chooses a color between them
+                            instance.color = Color.Lerp(vegetation[tp].colour1, vegetation[tp].colour2, UnityEngine.Random.Range(0.0f, 1.0f));
+                            instance.lightmapColor = vegetation[tp].lightColour;
                             //If we want to rescale instances we set here
-                            instance.heightScale = 0.95f;
-                            instance.widthScale = 0.95f;
+                            //If we wanna keep consistent 
+                            float s = instance.heightScale = UnityEngine.Random.Range(vegetation[tp].minScale, vegetation[tp].maxScale);
+                            instance.heightScale = s;
+                            instance.widthScale = s;
+
+                            //If we want them different values
+                            //instance.heightScale = UnityEngine.Random.Range(vegetation[tp].minScale,vegetation[tp].maxScale);
+                            //instance.widthScale = UnityEngine.Random.Range(vegetation[tp].minScale,vegetation[tp].maxScale);
 
                             allVegetation.Add(instance);
                             //Check if we havent gone over the max trees
                             //Quit out and finish
                             if (allVegetation.Count >= maxTrees) goto TREESDONE;
+
                         }
-                       
+                        //------------ADD THIS
+                        instance.position = new Vector3(instance.position.x * terrainData.size.x / terrainData.alphamapWidth,
+                                                 instance.position.y,
+                                                     instance.position.z * terrainData.size.z / terrainData.alphamapHeight);
+                        //------------ADD THIS
+
+                        instance.rotation = UnityEngine.Random.Range(0, 360);
+                        instance.prototypeIndex = tp;
+                        instance.color = Color.white;
+                        instance.lightmapColor = Color.white;
                     }
                 }
             }
