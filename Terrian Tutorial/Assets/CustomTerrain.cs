@@ -52,7 +52,7 @@ public class CustomTerrain : MonoBehaviour {
     public float voronoiMaxHeight = 0.5f;
     public int voronoiPeaks = 5;
     //Allow us to switch between these options
-    public enum VoronoiType { Linear = 0, Power = 1, Combined  = 2, Challenge = 3}
+    public enum VoronoiType { Linear = 0, Power = 1, Combined = 2, Challenge = 3 }
     public VoronoiType voronoiType = VoronoiType.Linear;
 
     //Midpoint Displacement ----------------------
@@ -62,7 +62,7 @@ public class CustomTerrain : MonoBehaviour {
     public float MPDroughness = 2.0f;
 
 
-    
+
 
     //Smooth
     public int smoothAmount = 1;
@@ -131,6 +131,38 @@ public class CustomTerrain : MonoBehaviour {
         new SplatHeights()
     };
 
+    //DETAILS ------------------------------------------------------------
+    [System.Serializable]
+    public class Detail
+    {
+        //You can have a billboard or mesh
+        public GameObject Prototype = null;
+        public Texture2D prototypeTexture = null;
+        public float minHeight = 0.1f;
+        public float maxHeight = 0.2f;
+        public float minSlope = 0;
+        public float maxSlope = 90;
+        //public float minScale = 0.5f;
+        //public float maxScale = 1.0f;
+        //How much layers will overlap
+        public float overlap = 0.01f;
+        //Used for noise
+        public float feather = 0.05f;
+        //Probablity of placing
+        public float density = 0.5f;
+        public bool remove = false;
+
+    }
+
+    //List must have at least one
+    public List<Detail> details = new List<Detail>()
+    {
+        new Detail()
+    };
+
+    public int maxDetails = 5000;
+    public int detailSpacing = 5;
+
     //For our brownian motion
     public int perlinOctaves = 3;
     //Increasing amp each time going through octaves
@@ -153,6 +185,97 @@ public class CustomTerrain : MonoBehaviour {
             return new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
         }
     }
+    //Detail methods for table
+    //Method used to add details onto terrain
+    public void AddDetails()
+    {
+        //Detail Prototype is a class in unity engine
+        //Trees dont have any in built values, details do
+        DetailPrototype[] newDetailPrototypes;
+        newDetailPrototypes = new DetailPrototype[details.Count];
+        int dindex = 0;
+        foreach(Detail d in details)
+        {
+            //Create new detail prototype
+            newDetailPrototypes[dindex] = new DetailPrototype();
+            //Set object to a prototype (if gameobject)
+            newDetailPrototypes[dindex].prototype = d.Prototype;
+            //If its a texture, set to prototype texture
+            newDetailPrototypes[dindex].prototypeTexture = d.prototypeTexture;
+            //Healthy color is required to not be invisible
+            newDetailPrototypes[dindex].healthyColor = Color.white;
+            //If there is a gameobject in the table, use mesh
+            if (newDetailPrototypes[dindex].prototype)
+            {
+                //Set use mesh to true
+                newDetailPrototypes[dindex].usePrototypeMesh = true;
+                //Set render mode to vertexlit for meshes
+                newDetailPrototypes[dindex].renderMode = DetailRenderMode.VertexLit;
+            }
+            //If there is a texture, use billboard
+            else
+            {
+                //Set use mesh to flase
+                newDetailPrototypes[dindex].usePrototypeMesh = false;
+                //Set render mode to grass billboard
+                newDetailPrototypes[dindex].renderMode = DetailRenderMode.GrassBillboard;
+            }
+            //Move up in table
+            dindex++;
+        }
+        terrainData.detailPrototypes = newDetailPrototypes;
+
+
+        //Code used to add onto map
+        //More like splatmap than vegetation
+        //Loop thru each prototype
+        for(int i = 0; i < terrainData.detailPrototypes.Length; i++)
+        {
+            //Set up a map for each prototype
+            int[,] detailMap = new int[terrainData.detailWidth, terrainData.detailHeight];
+
+            //Go through x and y coords on detailMap
+            for(int y = 0; y < terrainData.detailHeight; y+= detailSpacing)
+            {
+                for(int x = 0; x < terrainData.detailWidth; x+= detailSpacing)
+                {
+                    //For now, random range on the map, if we are within density we want
+                    if (UnityEngine.Random.Range(0.0f, 1.0f) > details[i].density) continue;
+                    detailMap[y, x] = 1;
+                }
+            }
+            //Apply
+            terrainData.SetDetailLayer(0, 0, i, detailMap);
+        }
+    }
+
+    //Add new items to table
+    public void AddNewDetails()
+    {
+        details.Add(new Detail());
+    }
+
+    //Remove items from table
+    //Cannot be less than 1 so adds a blank if so
+    public void RemoveDetails()
+    {
+        List<Detail> keptDetails = new List<Detail>();
+        for (int i = 0; i < details.Count; i++)
+        {
+            if (!details[i].remove)
+            {
+                keptDetails.Add(details[i]);
+            }
+        }
+        if (keptDetails.Count == 0)
+        {
+            keptDetails.Add(details[0]);
+        }
+        details = keptDetails;
+    }
+
+
+
 
     //Vegetation methods for table
     //Method used for placing trees/rocks/etc onto terrain
@@ -260,12 +383,6 @@ public class CustomTerrain : MonoBehaviour {
                         instance.position = new Vector3(instance.position.x * terrainData.size.x / terrainData.alphamapWidth,
                                                  instance.position.y,
                                                      instance.position.z * terrainData.size.z / terrainData.alphamapHeight);
-                        //------------ADD THIS
-
-                        instance.rotation = UnityEngine.Random.Range(0, 360);
-                        instance.prototypeIndex = tp;
-                        instance.color = Color.white;
-                        instance.lightmapColor = Color.white;
                     }
                 }
             }

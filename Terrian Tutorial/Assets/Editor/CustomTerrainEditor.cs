@@ -42,16 +42,25 @@ public class CustomTerrainEditor : Editor
     SerializedProperty splatOffset;
     */
 
+    //Perlin noise
     GUITableState perlinParameterTable;
     SerializedProperty perlinParameters;
 
+    //Splatmap
     GUITableState splatMapTable;
     SerializedProperty splatHeights;
 
+    //Vegetation
     GUITableState vegetationTable;
     SerializedProperty vegetation;
     SerializedProperty maxTrees;
     SerializedProperty treeSpacing;
+
+    //Details
+    GUITableState detailTable;
+    SerializedProperty details;
+    SerializedProperty maxDetails;
+    SerializedProperty detailSpacing;
 
     //fold outs -----------------------
     bool showRandom = false;
@@ -64,6 +73,7 @@ public class CustomTerrainEditor : Editor
     bool showSplatMaps = false;
     bool showHeights = false;
     bool showVegetation = false;
+    bool showDetail = false;
 
     Texture2D hmTexture;
 
@@ -96,12 +106,19 @@ public class CustomTerrainEditor : Editor
         MPDheightDampenerPower = serializedObject.FindProperty("MPDheightDampenerPower");
         MPDroughness = serializedObject.FindProperty("MPDroughness");
         smoothAmount = serializedObject.FindProperty("smoothAmount");
+
         splatMapTable = new GUITableState("splatMapTable");
         splatHeights = serializedObject.FindProperty("splatHeights");
+
         vegetationTable = new GUITableState("vegetationTable");
         vegetation = serializedObject.FindProperty("vegetation");
         maxTrees = serializedObject.FindProperty("maxTrees");
         treeSpacing = serializedObject.FindProperty("treeSpacing");
+
+        detailTable = new GUITableState("detailTable");
+        details = serializedObject.FindProperty("details");
+        maxDetails = serializedObject.FindProperty("maxDetails");
+        detailSpacing = serializedObject.FindProperty("detailSpacing");
 
         hmTexture = new Texture2D(513, 513, TextureFormat.ARGB32, false);
        /* noisex = serializedObject.FindProperty("noisex");
@@ -320,6 +337,41 @@ public class CustomTerrainEditor : Editor
                 terrain.PlantVegetation();
             }
         }
+        //Foldout tab for detail
+        showDetail = EditorGUILayout.Foldout(showDetail, "Details");
+        if (showDetail)
+        {
+            //Label
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Label("Details", EditorStyles.boldLabel);
+
+            //Sliders
+            EditorGUILayout.IntSlider(maxDetails, 0, 10000, new GUIContent("Maximum Detail"));
+            EditorGUILayout.IntSlider(detailSpacing, 1, 20, new GUIContent("Detail Spacing"));
+
+            //Table
+            detailTable = GUITableLayout.DrawTable(detailTable, serializedObject.FindProperty("details"));
+            GUILayout.Space(20);
+
+            //Add and remove buttons
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("+"))
+            {
+                terrain.AddNewDetails();
+            }
+            if (GUILayout.Button("-"))
+            {
+                terrain.RemoveDetails();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            //Apply
+            if(GUILayout.Button("Apply Details"))
+            {
+                terrain.AddDetails();
+            }
+        }
+        
         showSmooth = EditorGUILayout.Foldout(showSmooth, "Smooth");
         if (showSmooth)
         {

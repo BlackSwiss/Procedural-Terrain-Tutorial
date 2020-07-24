@@ -360,7 +360,7 @@ MonoBehaviour:
   MPDheightMax: 2
   MPDheightDampenerPower: 2
   MPDroughness: 2
-  smoothAmount: 1
+  smoothAmount: 5
   perlinParameters:
   - mPerlinXScale: 0.01
     mPerlinYScale: 0.01
@@ -375,7 +375,7 @@ MonoBehaviour:
     minHeight: 0
     maxHeight: 1
     minSlope: 0
-    maxSlope: 5
+    maxSlope: 1
     minScale: 0
     maxScale: 1
     colour1: {r: 1, g: 0.9643257, b: 0.15566039, a: 1}
@@ -400,6 +400,29 @@ MonoBehaviour:
     noiseMultiplier: 0.1
     splatOffset: 0.1
     remove: 0
+  details:
+  - Prototype: {fileID: 100000, guid: 8e41f14c6552d48e6a7992aaecc808e4, type: 3}
+    prototypeTexture: {fileID: 0}
+    minHeight: 0.1
+    maxHeight: 0.2
+    minSlope: 0
+    maxSlope: 90
+    overlap: 0.01
+    feather: 0.05
+    density: 0.5
+    remove: 0
+  - Prototype: {fileID: 0}
+    prototypeTexture: {fileID: 2800000, guid: ba0dbc11bd11158b1100de1b44295342, type: 3}
+    minHeight: 0.1
+    maxHeight: 0.2
+    minSlope: 0
+    maxSlope: 90
+    overlap: 0.01
+    feather: 0.05
+    density: 0.5
+    remove: 0
+  maxDetails: 5000
+  detailSpacing: 5
   perlinOctaves: 3
   perlinPersistance: 8
   perlinHeightScale: 0.09
