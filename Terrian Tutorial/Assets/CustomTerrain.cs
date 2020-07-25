@@ -225,6 +225,7 @@ public class CustomTerrain : MonoBehaviour {
         }
         terrainData.detailPrototypes = newDetailPrototypes;
 
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
 
         //Code used to add onto map
         //More like splatmap than vegetation
@@ -241,7 +242,29 @@ public class CustomTerrain : MonoBehaviour {
                 {
                     //For now, random range on the map, if we are within density we want
                     if (UnityEngine.Random.Range(0.0f, 1.0f) > details[i].density) continue;
-                    detailMap[y, x] = 1;
+
+                    //Convert x/resolution * resolution you want
+                    //same with y
+                    int xHM = (int)(x / (float)terrainData.detailWidth * terrainData.heightmapWidth);
+                    int yHM = (int)(y / (float)terrainData.detailHeight * terrainData.heightmapHeight);
+
+                    //Perlin noise function with detail width/height*feather amount (scaling value)
+                    //Between 0 and 1  but wanna put it between .5 and 1
+                    float thisNoise = Utils.Map(Mathf.PerlinNoise(x * details[i].feather, y * details[i].feather), 0, 1, 0.5f, 1);
+                    //Create start and end height
+                    //Where the next detail will start
+                    //Adding and subtracting overlap, can go lower or higher
+                    float thisHeightStart = details[i].minHeight * thisNoise - details[i].overlap * thisNoise;
+                    float nextHeightStart = details[i].maxHeight * thisNoise + details[i].overlap * thisNoise;
+
+                    //Height value taken from height map
+                    float thisHeight = heightMap[yHM, xHM];
+
+                    float steepness = terrainData.GetSteepness(xHM / (float)terrainData.size.x, yHM / (float)terrainData.size.z);
+                    if((thisHeight >= thisHeightStart && thisHeight <= nextHeightStart) && (steepness >= details[i].minSlope && steepness <= details[i].maxSlope))
+                    {
+                        detailMap[y, x] = 1;
+                    }
                 }
             }
             //Apply
