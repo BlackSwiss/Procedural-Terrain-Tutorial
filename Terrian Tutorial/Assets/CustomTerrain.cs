@@ -260,9 +260,12 @@ public class CustomTerrain : MonoBehaviour {
                     //Height value taken from height map
                     float thisHeight = heightMap[yHM, xHM];
 
+                    //Must use heightmap values to reference where you are in steepness then normalize
                     float steepness = terrainData.GetSteepness(xHM / (float)terrainData.size.x, yHM / (float)terrainData.size.z);
+                    //Between 2 heights and on right steepness level
                     if((thisHeight >= thisHeightStart && thisHeight <= nextHeightStart) && (steepness >= details[i].minSlope && steepness <= details[i].maxSlope))
                     {
+                        //Put 1 in detail map
                         detailMap[y, x] = 1;
                     }
                 }

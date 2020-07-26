@@ -351,6 +351,8 @@ public class CustomTerrainEditor : Editor
 
             //Table
             detailTable = GUITableLayout.DrawTable(detailTable, serializedObject.FindProperty("details"));
+            //Allows you to see the details based on the max details slider
+            terrain.GetComponent<Terrain>().detailObjectDistance = maxDetails.intValue;
             GUILayout.Space(20);
 
             //Add and remove buttons
