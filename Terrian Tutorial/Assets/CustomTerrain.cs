@@ -142,8 +142,11 @@ public class CustomTerrain : MonoBehaviour {
         public float maxHeight = 0.2f;
         public float minSlope = 0;
         public float maxSlope = 90;
-        //public float minScale = 0.5f;
-        //public float maxScale = 1.0f;
+        public Color dryColour = Color.white;
+        public Color healthyColour = Color.white;
+        public Vector2 heightRange = new Vector2(1, 1);
+        public Vector2 widthRange = new Vector2(1, 1);
+        public float noiseSpread = 0.5f;
         //How much layers will overlap
         public float overlap = 0.01f;
         //Used for noise
@@ -203,7 +206,15 @@ public class CustomTerrain : MonoBehaviour {
             //If its a texture, set to prototype texture
             newDetailPrototypes[dindex].prototypeTexture = d.prototypeTexture;
             //Healthy color is required to not be invisible
-            newDetailPrototypes[dindex].healthyColor = Color.white;
+            newDetailPrototypes[dindex].healthyColor = d.healthyColour;
+            //Setting options for detailsqqqqqqqq
+            newDetailPrototypes[dindex].dryColor = d.dryColour;
+            newDetailPrototypes[dindex].minHeight = d.heightRange.x;
+            newDetailPrototypes[dindex].maxHeight = d.heightRange.y;
+            newDetailPrototypes[dindex].minWidth = d.widthRange.x;
+            newDetailPrototypes[dindex].maxWidth = d.widthRange.y;
+            newDetailPrototypes[dindex].noiseSpread = d.noiseSpread;
+
             //If there is a gameobject in the table, use mesh
             if (newDetailPrototypes[dindex].prototype)
             {

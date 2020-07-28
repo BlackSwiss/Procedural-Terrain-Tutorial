@@ -407,6 +407,11 @@ MonoBehaviour:
     maxHeight: 0.2
     minSlope: 0
     maxSlope: 90
+    dryColour: {r: 1, g: 1, b: 1, a: 1}
+    healthyColour: {r: 1, g: 1, b: 1, a: 1}
+    heightRange: {x: 1, y: 1}
+    widthRange: {x: 1, y: 1}
+    noiseSpread: 0.5
     overlap: 0.01
     feather: 0.05
     density: 0.001
@@ -417,7 +422,12 @@ MonoBehaviour:
     maxHeight: 0.2
     minSlope: 0
     maxSlope: 50
-    overlap: 0.01
+    dryColour: {r: 1, g: 1, b: 1, a: 1}
+    healthyColour: {r: 1, g: 1, b: 1, a: 1}
+    heightRange: {x: 1, y: 5}
+    widthRange: {x: 1, y: 5}
+    noiseSpread: 0.1
+    overlap: 0.1
     feather: 0.05
     density: 0.5
     remove: 0
