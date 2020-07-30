@@ -166,6 +166,10 @@ public class CustomTerrain : MonoBehaviour {
     public int maxDetails = 5000;
     public int detailSpacing = 5;
 
+    //Water level ---------------------------------
+    public float waterHeight = 0.1f;
+    public GameObject waterGO;
+
     //For our brownian motion
     public int perlinOctaves = 3;
     //Increasing amp each time going through octaves
@@ -188,6 +192,29 @@ public class CustomTerrain : MonoBehaviour {
             return new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
         }
     }
+
+    //Adding water method
+    public void AddWater()
+    {
+        //Test if there isnt already water in scene
+        GameObject water = GameObject.Find("water");
+        if (!water)
+        {
+            //Water equals the game object at the position and rotation of terrain
+            //Water will be offset 
+            water = Instantiate(waterGO, this.transform.position, this.transform.rotation);
+            water.name = "water";
+        }
+        //Will get rid of offset
+        //Move over the water so it is in the center
+        water.transform.position = this.transform.position + new Vector3(terrainData.size.x / 2, waterHeight * terrainData.size.y,terrainData.size.z/2);
+        //Making scale of the terrain
+        //Dont wanna change y
+        water.transform.localScale = new Vector3(terrainData.size.x, 1, terrainData.size.z);
+    }
+
+
+
     //Detail methods for table
     //Method used to add details onto terrain
     public void AddDetails()

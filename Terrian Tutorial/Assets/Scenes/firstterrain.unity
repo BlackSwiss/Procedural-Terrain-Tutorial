@@ -259,6 +259,100 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &2088825618
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 2088825622}
+  - component: {fileID: 2088825621}
+  - component: {fileID: 2088825620}
+  - component: {fileID: 2088825619}
+  m_Layer: 4
+  m_Name: water
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2088825619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2088825618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3d3ef1a5bbfb4e0a910fbbe5830b1f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterMode: 2
+  disablePixelLights: 1
+  textureSize: 256
+  clipPlaneOffset: 0.07
+  reflectLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  refractLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!23 &2088825620
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2088825618}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
+  m_Materials:
+  - {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &2088825621
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2088825618}
+  m_Mesh: {fileID: 4300006, guid: ba6a41dc489914734857bb5924eb70ad, type: 3}
+--- !u!4 &2088825622
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2088825618}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 250, y: 4.8, z: 250}
+  m_LocalScale: {x: 500, y: 1, z: 500}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2112693665
 GameObject:
   m_ObjectHideFlags: 0
@@ -300,7 +394,7 @@ Terrain:
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
   m_TreeMaximumFullLODCount: 50
-  m_DetailObjectDistance: 2167
+  m_DetailObjectDistance: 2478
   m_DetailObjectDensity: 1
   m_HeightmapPixelError: 5
   m_SplatMapDistance: 1000
@@ -371,11 +465,11 @@ MonoBehaviour:
     mPerlinOffsetY: 0
     remove: 0
   vegetation:
-  - mesh: {fileID: 0}
-    minHeight: 0
+  - mesh: {fileID: 100000, guid: 25fa881dbd110e38a00062d88f962b59, type: 3}
+    minHeight: 0.0005
     maxHeight: 1
     minSlope: 0
-    maxSlope: 1
+    maxSlope: 50
     minScale: 0
     maxScale: 1
     colour1: {r: 1, g: 0.9643257, b: 0.15566039, a: 1}
@@ -383,21 +477,45 @@ MonoBehaviour:
     lightColour: {r: 0.9528302, g: 0.9298342, b: 0.04045032, a: 1}
     minRotation: 0
     maxRotation: 360
-    density: 1
+    density: 0.1
     remove: 0
   maxTrees: 9689
   treeSpacing: 6
   splatHeights:
-  - texture: {fileID: 0}
-    minHeight: 0.1
-    maxHeight: 0.2
+  - texture: {fileID: 2800000, guid: 8b428e4e6cc624a4c9235f69da8e3edb, type: 3}
+    minHeight: 0
+    maxHeight: 0
     minSlope: 0
-    maxSlope: 1.5
+    maxSlope: 20
     tileOffset: {x: 0, y: 0}
     tileSize: {x: 50, y: 50}
     noisex: 0.01
     noisey: 0.01
     noiseMultiplier: 0.1
+    splatOffset: 0.1
+    remove: 0
+  - texture: {fileID: 2800000, guid: 6f7916404ed2e49fda737e69e8f3bc69, type: 3}
+    minHeight: 0
+    maxHeight: 0
+    minSlope: 1
+    maxSlope: 90
+    tileOffset: {x: 0, y: 0}
+    tileSize: {x: 50, y: 50}
+    noisex: 0.01
+    noisey: 0.01
+    noiseMultiplier: 0.000001
+    splatOffset: 0.1
+    remove: 0
+  - texture: {fileID: 2800000, guid: 858e483d613d848cb935156b41553e4d, type: 3}
+    minHeight: 0.23
+    maxHeight: 1
+    minSlope: 0
+    maxSlope: 90
+    tileOffset: {x: 0, y: 0}
+    tileSize: {x: 50, y: 50}
+    noisex: 0.01
+    noisey: 0.01
+    noiseMultiplier: 0.15
     splatOffset: 0.1
     remove: 0
   details:
@@ -418,7 +536,7 @@ MonoBehaviour:
     remove: 0
   - Prototype: {fileID: 0}
     prototypeTexture: {fileID: 2800000, guid: ba0dbc11bd11158b1100de1b44295342, type: 3}
-    minHeight: 0
+    minHeight: 0.15
     maxHeight: 0.2
     minSlope: 0
     maxSlope: 50
@@ -431,8 +549,10 @@ MonoBehaviour:
     feather: 0.05
     density: 0.5
     remove: 0
-  maxDetails: 2167
+  maxDetails: 2478
   detailSpacing: 2
+  waterHeight: 0.008
+  waterGO: {fileID: 100000, guid: 780611a67e8e941a2b3aa96e5915a793, type: 2}
   perlinOctaves: 3
   perlinPersistance: 8
   perlinHeightScale: 0.09
