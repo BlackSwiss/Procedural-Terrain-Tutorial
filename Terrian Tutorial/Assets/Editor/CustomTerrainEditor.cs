@@ -65,6 +65,7 @@ public class CustomTerrainEditor : Editor
     //Water
     SerializedProperty waterHeight;
     SerializedProperty waterGO;
+    SerializedProperty shoreLineMaterial;
 
     //fold outs -----------------------
     bool showRandom = false;
@@ -127,6 +128,7 @@ public class CustomTerrainEditor : Editor
 
         waterHeight = serializedObject.FindProperty("waterHeight");
         waterGO = serializedObject.FindProperty("waterGO");
+        shoreLineMaterial = serializedObject.FindProperty("shoreLineMaterial");
 
         hmTexture = new Texture2D(513, 513, TextureFormat.ARGB32, false);
        /* noisex = serializedObject.FindProperty("noisex");
@@ -398,6 +400,14 @@ public class CustomTerrainEditor : Editor
             {
                 terrain.AddWater();
             }
+
+            //Material holder
+            EditorGUILayout.PropertyField(shoreLineMaterial);
+            if(GUILayout.Button("Add Shoreline"))
+            {
+                terrain.DrawShoreLine();
+            }
+
         }
         
         showSmooth = EditorGUILayout.Foldout(showSmooth, "Smooth");

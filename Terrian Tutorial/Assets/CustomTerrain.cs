@@ -169,6 +169,7 @@ public class CustomTerrain : MonoBehaviour {
     //Water level ---------------------------------
     public float waterHeight = 0.1f;
     public GameObject waterGO;
+    public Material shoreLineMaterial;
 
     //For our brownian motion
     public int perlinOctaves = 3;
@@ -213,6 +214,66 @@ public class CustomTerrain : MonoBehaviour {
         water.transform.localScale = new Vector3(terrainData.size.x, 1, terrainData.size.z);
     }
 
+    //Adding shoreline method
+    public void DrawShoreLine()
+    {
+        //Get heightmap 
+        //Need to know difference in height values in our heightmap to determine shoreline
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+
+        int quadCount = 0;
+        //So our quads are set to a child of a single game object rather than more than 1
+        GameObject quads = new GameObject("QUADS");
+        //Loop around x and y of heightmap
+        for (int y = 0; y < terrainData.heightmapHeight; y++)
+        {
+            for(int x = 0; x < terrainData.heightmapWidth; x++)
+            {
+                //We must find our neighbours for each coord
+                //find spot on shore
+                //Convert x and y into a vector 2
+                Vector2 thisLocation = new Vector2(x, y);
+                //List of neighbours
+                List<Vector2> neighbours = GenerateNeighbours(thisLocation, terrainData.heightmapWidth, terrainData.heightmapHeight);
+
+                //Loop thru neighbours
+                foreach(Vector2 n in neighbours)
+                {
+                    //If heightmap at this position is less than water height, and height of neighbour is greater than water height
+                    //Must be on shoreline
+                    if (heightMap[x, y] < waterHeight && heightMap[(int)n.x, (int)n.y] > waterHeight)
+                    {
+                        //If we wanna limit the quad count
+                        //if (quadCount < 1000)
+                        //{
+                            //Counting our quads
+                            quadCount++;
+
+                            //Every shoreline create a gameobject made out of a quad
+                            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Quad);
+
+                            //Increase scale of quad
+                            //Set for bigger waves or shorelines
+                            go.transform.localScale *= 10.0f;
+
+                            //Code for positioning quad
+                            //Take x and z of heightmap and use for quad
+                            go.transform.position = this.transform.position + new Vector3(y / (float)terrainData.heightmapHeight * terrainData.size.z, waterHeight * terrainData.size.y,
+                                x / (float)terrainData.heightmapHeight * terrainData.size.x);
+
+                            //rotate shore foam to be on its side
+                            go.transform.Rotate(90, 0, 0);
+
+                            //Add shore tag to quads
+                            go.tag = "Shore";
+
+                            go.transform.parent = quads.transform;
+                       // }
+                    }
+                }
+            }
+        }
+    }
 
 
     //Detail methods for table
