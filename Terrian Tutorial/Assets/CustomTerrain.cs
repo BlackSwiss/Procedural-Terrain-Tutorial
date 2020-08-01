@@ -223,7 +223,8 @@ public class CustomTerrain : MonoBehaviour {
 
         int quadCount = 0;
         //So our quads are set to a child of a single game object rather than more than 1
-        GameObject quads = new GameObject("QUADS");
+       // GameObject quads = new GameObject("QUADS");
+
         //Loop around x and y of heightmap
         for (int y = 0; y < terrainData.heightmapHeight; y++)
         {
@@ -261,18 +262,83 @@ public class CustomTerrain : MonoBehaviour {
                             go.transform.position = this.transform.position + new Vector3(y / (float)terrainData.heightmapHeight * terrainData.size.z, waterHeight * terrainData.size.y,
                                 x / (float)terrainData.heightmapHeight * terrainData.size.x);
 
-                            //rotate shore foam to be on its side
-                            go.transform.Rotate(90, 0, 0);
+                            //So the shoreline is always rippling toward the land
+                            go.transform.LookAt(new Vector3(n.y / (float)terrainData.heightmapHeight * terrainData.size.z, waterHeight * terrainData.size.y, n.x / (float)terrainData.heightmapWidth * terrainData.size.x));
+
+                        //rotate shore foam to be on its side
+                        go.transform.Rotate(90, 0, 0);
 
                             //Add shore tag to quads
                             go.tag = "Shore";
 
-                            go.transform.parent = quads.transform;
+                          //  go.transform.parent = quads.transform;
                        // }
                     }
                 }
             }
         }
+
+        //Code for combining code
+        //Create an array of gameobjects, use FindGameObjectwithTag("Shore") to get all quads
+        GameObject[] shoreQuads = GameObject.FindGameObjectsWithTag("Shore");
+
+        //Create mesh filter, holds onto mesh so we can display it, must have a length
+        MeshFilter[] meshFilters = new MeshFilter[shoreQuads.Length];
+
+        //Loop through all quads and get all their mesh filters
+        for(int m = 0; m < shoreQuads.Length; m++)
+        {
+            meshFilters[m] = shoreQuads[m].GetComponent<MeshFilter>();
+        }
+        //Combine mesh filters, must all be in a single array
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+
+        //Loop for each mesh filter
+        int i = 0;
+        while(i < meshFilters.Length)
+        {
+            //At the mesh in the combine array, equal it to the same mesh
+            combine[i].mesh = meshFilters[i].sharedMesh;
+            //Need to make sure they are in the same position, get coords at world space so we can stitch together with their position
+            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+            //Turn off quad, cant combine unless game object is turned off
+            meshFilters[i].gameObject.active = false;
+            i++;
+        }
+
+        //Code for combinding meshes
+        //Create gameobject that will store meshs
+        GameObject currentShoreline = GameObject.Find("Shoreline");
+        //If done before we must destroy current
+        if (currentShoreline)
+        {
+            DestroyImmediate(currentShoreline);
+        }
+        //Create a new shoreline
+        GameObject shoreLine = new GameObject();
+        shoreLine.name = "Shoreline";
+        //Add wave animation script, comes with unity
+        shoreLine.AddComponent<WaveAnimation>();
+        //Set shoreline positon to be positon of terrain, same with rotation
+        shoreLine.transform.position = this.transform.position;
+        shoreLine.transform.rotation = this.transform.rotation;
+
+        //Create mesh filter to be added to shoreline object
+        //Will get hold of all quad meshes
+        MeshFilter thisMF = shoreLine.AddComponent<MeshFilter>();
+        //Initialize to brand new mesh
+        thisMF.mesh = new Mesh();
+        //Take all seperate quad meshes and stitch them together
+        shoreLine.GetComponent<MeshFilter>().sharedMesh.CombineMeshes(combine);
+
+        //Create mesh render and add to shoreline
+        //Set to shoreline material, foam shader
+        MeshRenderer r = shoreLine.AddComponent<MeshRenderer>();
+        r.sharedMaterial = shoreLineMaterial;
+
+        //Loop thru all quads and get rid of them, dont need them anymore
+        for (int sQ = 0; sQ < shoreQuads.Length; sQ++)
+            DestroyImmediate(shoreQuads[sQ]);
     }
 
 
