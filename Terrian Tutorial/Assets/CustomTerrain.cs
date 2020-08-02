@@ -177,6 +177,15 @@ public class CustomTerrain : MonoBehaviour {
     public float perlinPersistance = 8;
     public float perlinHeightScale = 0.09f;
 
+    //EROSION ------------------------------------------
+    public enum ErosionType { Rain = 0, Thermal = 1, Tidal = 2, River = 3, Wind = 4 }
+    public ErosionType erosionType = ErosionType.Rain;
+    public float erosionStrength = 0.1f;
+    public int springsPerRiver = 5;
+    public float solubility = 0.01f;
+    public int droplets = 10;
+    public int erosionSmoothAmount = 5;
+
     public Terrain terrain;
     public TerrainData terrainData;
 
@@ -193,6 +202,58 @@ public class CustomTerrain : MonoBehaviour {
             return new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
         }
     }
+
+    public void Erode()
+    {
+        //Whatever they choose, it will do their method
+        if (erosionType == ErosionType.Rain)
+            Rain();
+        else if (erosionType == ErosionType.Tidal)
+            Tidal();
+        else if (erosionType == ErosionType.Thermal)
+            Thermal();
+        else if (erosionType == ErosionType.River)
+            River();
+        else if (erosionType == ErosionType.Wind)
+            Wind();
+
+        //Smooth out as many time as it needs
+        for(int i = 0; i < erosionSmoothAmount; i++)
+        {
+            Smooth();
+        }
+    }
+
+    public void Rain()
+    {
+        //Get current height map
+        float[,] heightMap = terrainData.GetHeights(0,0,terrainData.heightmapWidth, terrainData.heightmapWidth);
+
+        //For every droplet, get a random direction and move down by erosion strength
+        for(int i = 0; i < droplets; i++)
+        {
+            heightMap[UnityEngine.Random.Range(0, terrainData.heightmapWidth), UnityEngine.Random.Range(0, terrainData.heightmapHeight)] -= erosionStrength;
+        }
+        //Apply changes
+        terrainData.SetHeights(0, 0, heightMap);
+    }
+    public void Thermal()
+    {
+
+    }
+    public void Tidal()
+    {
+
+    }
+    public void River()
+    {
+
+    }
+    public void Wind()
+    {
+
+    }
+
 
     //Adding water method
     public void AddWater()
