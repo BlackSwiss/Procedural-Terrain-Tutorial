@@ -345,7 +345,7 @@ MonoBehaviour:
   randomHeightRange: {x: 0, y: 0.1}
   heightMapImage: {fileID: 0}
   heightMapScale: {x: 1, y: 1, z: 1}
-  reset: 0
+  reset: 1
   perlinXScale: 0.01
   perlinYScale: 0.01
   perlinOffsetX: 0
@@ -388,11 +388,11 @@ MonoBehaviour:
   maxTrees: 9689
   treeSpacing: 6
   splatHeights:
-  - texture: {fileID: 2800000, guid: 69930cb68b9e44a93877a4fd343b0e89, type: 3}
+  - texture: {fileID: 2800000, guid: 18d06890de62d443ea645cc5adec617e, type: 3}
     minHeight: 0
-    maxHeight: 0
+    maxHeight: 1
     minSlope: 0
-    maxSlope: 20
+    maxSlope: 90
     tileOffset: {x: 0, y: 0}
     tileSize: {x: 50, y: 50}
     noisex: 0.01
@@ -424,12 +424,13 @@ MonoBehaviour:
   perlinOctaves: 3
   perlinPersistance: 8
   perlinHeightScale: 0.09
-  erosionType: 0
-  erosionStrength: 0.1
+  erosionType: 1
+  erosionStrength: 0.003
   springsPerRiver: 5
   solubility: 0.01
   droplets: 57
   erosionSmoothAmount: 0
+  thermalStrength: 0.01
   terrain: {fileID: 2112693667}
   terrainData: {fileID: 15600000, guid: e01ffdad697fce442bb2b7db876afb36, type: 2}
   terrainLayer: 9

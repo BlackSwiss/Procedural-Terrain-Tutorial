@@ -186,6 +186,8 @@ public class CustomTerrain : MonoBehaviour {
     public int droplets = 10;
     public int erosionSmoothAmount = 5;
 
+    public float erosionAmount = 0.01f;
+
     public Terrain terrain;
     public TerrainData terrainData;
 
@@ -239,7 +241,34 @@ public class CustomTerrain : MonoBehaviour {
     }
     public void Thermal()
     {
+        //Get heightmap
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+        //Loop thru heightmap, each value
+        for (int y = 0; y < terrainData.heightmapHeight; y++)
+        {
+            for(int x =0; x < terrainData.heightmapWidth; x++)
+            {
+                //Create a location at that x and y
+                Vector2 thisLocation = new Vector2(x, y);
+                //Use get neighbours methods, grab all neighbours from that location
+                List<Vector2> neighbours = GenerateNeighbours(thisLocation, terrainData.heightmapWidth, terrainData.heightmapHeight);
 
+                //Loop through list
+                foreach(Vector2 n in neighbours)
+                {
+                    //If value is greater than neighbour value and errosion strength
+                    if (heightMap[x, y] > heightMap[(int)n.x, (int)n.y] + erosionStrength)
+                    {
+                        //take some height out of height map position
+                        float currentHeight = heightMap[x, y];
+                        heightMap[x, y] -= currentHeight * erosionAmount;
+                        //Add to the neighbours/ move it down
+                        heightMap[(int)n.x, (int)n.y] += currentHeight * erosionAmount;
+                    }
+                }
+            }
+        }
+        terrainData.SetHeights(0, 0, heightMap);
     }
     public void Tidal()
     {

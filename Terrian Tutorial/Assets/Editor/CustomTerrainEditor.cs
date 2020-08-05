@@ -74,6 +74,7 @@ public class CustomTerrainEditor : Editor
     SerializedProperty solubility;
     SerializedProperty droplets;
     SerializedProperty erosionSmoothAmount;
+    SerializedProperty erosionAmount;
 
     //fold outs -----------------------
     bool showRandom = false;
@@ -145,6 +146,7 @@ public class CustomTerrainEditor : Editor
         springsPerRiver = serializedObject.FindProperty("springsPerRiver");
         solubility = serializedObject.FindProperty("solubility");
         erosionSmoothAmount = serializedObject.FindProperty("erosionSmoothAmount");
+        erosionAmount = serializedObject.FindProperty("erosionAmount");
 
         hmTexture = new Texture2D(513, 513, TextureFormat.ARGB32, false);
        /* noisex = serializedObject.FindProperty("noisex");
@@ -436,6 +438,7 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.PropertyField(erosionType);
             EditorGUILayout.Slider(erosionStrength, 0, 1, new GUIContent("Erosion Strength"));
             EditorGUILayout.IntSlider(droplets, 0, 500, new GUIContent("Droplets"));
+            EditorGUILayout.Slider(erosionAmount, 0, 1, new GUIContent("Erosion Amount"));
             EditorGUILayout.Slider(solubility, 0.001f, 1, new GUIContent("Solubility"));
             EditorGUILayout.IntSlider(springsPerRiver, 0, 20, new GUIContent("Springs Per River"));
             EditorGUILayout.IntSlider(erosionSmoothAmount, 0, 10, new GUIContent("Smooth Amount"));
