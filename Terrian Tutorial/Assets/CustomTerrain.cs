@@ -272,7 +272,33 @@ public class CustomTerrain : MonoBehaviour {
     }
     public void Tidal()
     {
+        //Get heightmap
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
 
+        //Loop thru each value in heightmap
+        for(int y =0; y < terrainData.heightmapHeight; y++)
+        {
+            for(int x = 0; x < terrainData.heightmapWidth; x++)
+            {
+                //Get the neighbours of each location
+                Vector2 thisLocation = new Vector2(x, y);
+                List<Vector2> neighbours = GenerateNeighbours(thisLocation, terrainData.heightmapWidth, terrainData.heightmapHeight);
+
+                //For every neighbour
+                foreach(Vector2 n in neighbours)
+                {
+                    //hegihtmap value that is less than water height value if its neighbour is greater, the shoreline
+                    if(heightMap[x,y] < waterHeight && heightMap[(int)n.x,(int)n.y] > waterHeight)
+                    {
+                        //set heightmap at that location and neighbours near it to the water height
+                        //Give a beach effect to water plane
+                        heightMap[x, y] = waterHeight;
+                        heightMap[(int)n.x, (int)n.y] = waterHeight;
+                    }
+                }
+            }
+        }
+        terrainData.SetHeights(0, 0, heightMap);
     }
     public void River()
     {
