@@ -33,4 +33,22 @@ public static class Utils{
         return (value - originalMin) * (targetMax - targetMin) / (originalMax - originalMin) + targetMin;
     }
 
+    public static System.Random r = new System.Random();
+    public static void Shuffle<T>(this IList<T> list)
+    {
+        int n = list.Count;
+        //Loops thru the list
+        //swaps current value with random value
+        while (n > 1)
+        {
+            //Go to next position
+            n--;
+            //gets random
+            int k = r.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+    }
+
 }

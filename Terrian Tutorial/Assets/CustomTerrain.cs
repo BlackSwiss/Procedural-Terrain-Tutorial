@@ -302,8 +302,83 @@ public class CustomTerrain : MonoBehaviour {
     }
     public void River()
     {
+        //Get heightmap
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
 
+        //Make another map, keeps track of where rivers will flow, dont have to touch actual heightmap until done
+        float[,] erosionMap = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+
+        //Loop for number of droplets
+        for(int i = 0; i < droplets; i++)
+        {
+            //Random position for droplets
+            Vector2 dropletPosition = new Vector2(UnityEngine.Random.Range(0, terrainData.heightmapWidth), UnityEngine.Random.Range(0, terrainData.heightmapHeight));
+
+            //Set erosion map at droplet position to be erosion strength
+            erosionMap[(int)dropletPosition.x, (int)dropletPosition.y] = erosionStrength;
+
+            //For every droplet,  from single droplet, create a river
+            for(int j = 0; j < springsPerRiver; j++)
+            {
+                //Run river will process the movement of the river, will take droplet position, maps and width and height of terrain
+                erosionMap = RunRiver(dropletPosition, heightMap, erosionMap, terrainData.heightmapWidth, terrainData.heightmapHeight);
+            }
+        }
+
+        //Must now apply erosion map to terrain
+        for(int y = 0; y < terrainData.heightmapHeight; y++)
+        {
+            for(int x =0; x < terrainData.heightmapWidth; x++)
+            {
+                //Anywhere in erosion map that is greater than 0, apply to heightmap
+                if(erosionMap[x,y] > 0)
+                {
+                    //Take value in erosion map away from height map
+                    heightMap[x, y] -= erosionMap[x, y];
+                }
+            }
+        }
+        terrainData.SetHeights(0, 0, heightMap);
     }
+    
+    //Method used for creating rivers from droplets
+    float[,] RunRiver(Vector3 dropletPosition, float[,] heightMap, float[,] erosionMap, int width, int height)
+    {
+        //At each x,y thats greater than 0, nothing more to erode once its 0
+        while(erosionMap[(int)dropletPosition.x, (int)dropletPosition.y] > 0)
+        {
+            //Get neighbours
+            List<Vector2> neighbours = GenerateNeighbours(dropletPosition, width, height);
+            //Shuffle neighbours
+            neighbours.Shuffle();
+            //When we find lower neighbour set true and stop looping
+            bool foundLower = false;
+            //Loop thru each neighbour
+            foreach(Vector2 n in neighbours)
+            {
+                //If heightmap is less than droplet position on heightmap
+                if(heightMap[(int)n.x, (int)n.y] < heightMap[(int)dropletPosition.x, (int)dropletPosition.y])
+                {
+                    //Move droplet into next position
+                    //Solubility is how much dirt you take with you down stream
+                    erosionMap[(int)n.x, (int)n.y] = erosionMap[(int)dropletPosition.x, (int)dropletPosition.y] - solubility;
+                    //update droplet position to neighbours position
+                    dropletPosition = n;
+                    //Set foundlower to true
+                    foundLower = true;
+                    break;
+                }
+            }
+            //if we havent found lower postiion
+            if (!foundLower)
+            {
+                //Reduce erosionmap at droplet position until we reduce it down to 0
+                erosionMap[(int)dropletPosition.x, (int)dropletPosition.y] -= solubility;
+            }
+        }
+        return erosionMap;
+    }
+
     public void Wind()
     {
 
